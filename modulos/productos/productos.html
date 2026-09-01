@@ -1,0 +1,161 @@
+<div class="modulo-header">
+  <h2>Catálogo de Productos & Márgenes de Marcación</h2>
+  <p>Configura tus categorías con % de marcación (markup) y productos por unidad/bulto.</p>
+</div>
+
+<!-- KPIs del Catálogo -->
+<div class="grilla-kpis" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+  <div class="tarjeta-kpi">
+    <span class="kpi-titulo">Total Productos Cargados</span>
+    <span id="productos-total-items" class="kpi-valor">0 productos</span>
+    <span class="kpi-subtexto">Productos en el catálogo activo</span>
+  </div>
+  <div class="tarjeta-kpi">
+    <span class="kpi-titulo">Categorías Activas</span>
+    <span id="productos-total-categorias" class="kpi-valor">0 categorías</span>
+    <span class="kpi-subtexto">Con marcación heredable</span>
+  </div>
+  <div class="tarjeta-kpi">
+    <span class="kpi-titulo">Facturación Potencial Mensual</span>
+    <span id="productos-facturacion-potencial" class="kpi-valor">$0</span>
+    <span class="kpi-subtexto">Si se venden todas las cantidades simuladas</span>
+  </div>
+</div>
+
+<!-- Categorías de Productos -->
+<div class="tarjeta" style="margin-bottom: 1.5rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h3>Categorías de Productos & % Marcación</h3>
+    <button id="btn-nueva-categoria" class="btn btn-secundario" style="padding: 0.35rem 0.75rem; font-size: 0.85rem;">
+      ➕ Nueva Categoría
+    </button>
+  </div>
+  <div id="contenedor-categorias" style="display: flex; gap: 0.75rem; flex-wrap: wrap;"></div>
+</div>
+
+<!-- Tabla de Productos -->
+<div class="tarjeta" style="margin-bottom: 1.5rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h3>Listado de Productos</h3>
+    <button id="btn-nuevo-producto" class="btn btn-primario">
+      ➕ Agregar Producto
+    </button>
+  </div>
+
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+      <thead>
+        <tr style="background-color: var(--color-fondo-pagina); border-bottom: 1px solid var(--color-borde);">
+          <th style="padding: 0.75rem 1rem;">Producto</th>
+          <th style="padding: 0.75rem 1rem;">Categoría</th>
+          <th style="padding: 0.75rem 1rem;">Uds/Bulto</th>
+          <th style="padding: 0.75rem 1rem;">Costo Bulto</th>
+          <th style="padding: 0.75rem 1rem;">Marcación</th>
+          <th style="padding: 0.75rem 1rem;">Venta Bulto</th>
+          <th style="padding: 0.75rem 1rem;">Unitario (Costo → Venta)</th>
+          <th style="padding: 0.75rem 1rem; text-align: center;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-productos-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Categoría -->
+<div id="modal-categoria" class="modal-overlay">
+  <div class="modal-contenido">
+    <div class="modal-header">
+      <h3 id="modal-categoria-titulo">Nueva Categoría</h3>
+      <button id="btn-cerrar-modal-categoria" class="btn-cerrar-modal">✖</button>
+    </div>
+    <form id="form-categoria">
+      <input type="hidden" id="categoria-id">
+      <div style="margin-bottom: 1rem;">
+        <label for="categoria-nombre" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre de la Categoría</label>
+        <input type="text" id="categoria-nombre" required placeholder="Ej: Panificados, Rotisería, Bebidas..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+      </div>
+      <div style="margin-bottom: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+        <div>
+          <label for="categoria-marcacion" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">% Marcación por Defecto</label>
+          <input type="number" id="categoria-marcacion" required min="0" max="500" step="5" value="40" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+        </div>
+        <div>
+          <label for="categoria-frecuencia" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Frecuencia de Venta Típica</label>
+          <select id="categoria-frecuencia" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+            <option value="Diaria">Diaria</option>
+            <option value="Semanal">Semanal</option>
+            <option value="Quincenal">Quincenal</option>
+            <option value="Mensual">Mensual</option>
+          </select>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+        <button type="button" id="btn-cancelar-modal-categoria" class="btn btn-secundario">Cancelar</button>
+        <button type="submit" class="btn btn-primario">Guardar Categoría</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Producto -->
+<div id="modal-producto" class="modal-overlay">
+  <div class="modal-contenido">
+    <div class="modal-header">
+      <h3 id="modal-producto-titulo">Nuevo Producto</h3>
+      <button id="btn-cerrar-modal-producto" class="btn-cerrar-modal">✖</button>
+    </div>
+    <form id="form-producto">
+      <input type="hidden" id="producto-id">
+
+      <div style="margin-bottom: 1rem;">
+        <label for="producto-nombre" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del Producto</label>
+        <input type="text" id="producto-nombre" required placeholder="Ej: 1 Lata Facturas (36 unidades)" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+      </div>
+
+      <div style="margin-bottom: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+        <div>
+          <label for="producto-categoria" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Categoría</label>
+          <select id="producto-categoria" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);"></select>
+        </div>
+        <div>
+          <label for="producto-frecuencia" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Frecuencia Venta</label>
+          <select id="producto-frecuencia" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+            <option value="Diaria">Diaria</option>
+            <option value="Semanal">Semanal</option>
+            <option value="Quincenal">Quincenal</option>
+            <option value="Mensual">Mensual</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem;">
+        <div>
+          <label for="producto-costo-bulto" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Costo Bulto/Paquete ($)</label>
+          <input type="number" id="producto-costo-bulto" required min="0" step="100" placeholder="45000" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+        </div>
+        <div>
+          <label for="producto-unidades-bulto" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Unidades por Bulto</label>
+          <input type="number" id="producto-unidades-bulto" required min="1" step="1" value="1" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+        </div>
+        <div>
+          <label for="producto-marcacion" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">% Marcación</label>
+          <input type="number" id="producto-marcacion" required min="0" max="500" step="5" value="40" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1rem; background-color: var(--color-fondo-pagina); padding: 0.75rem; border-radius: var(--radio-borde); font-size: 0.85rem;" id="producto-preview-precios">
+        <span>Completá costo y marcación para ver precios calculados</span>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label for="producto-cantidad-simulada" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Cantidad Simulada Inicial (para el Simulador)</label>
+        <input type="number" id="producto-cantidad-simulada" min="0" step="1" value="10" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+        <button type="button" id="btn-cancelar-modal-producto" class="btn btn-secundario">Cancelar</button>
+        <button type="submit" class="btn btn-primario">Guardar Producto</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,155 @@
+<div class="modulo-header">
+  <h2>Personal, Roles y Análisis de Brecha Horaria</h2>
+  <p>Gestión de sueldos netos, turnos y cobertura del horario comercial.</p>
+</div>
+
+<!-- Resumen de Costos de Personal y Brecha Horaria -->
+<div class="grilla-kpis" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+  <div class="tarjeta-kpi">
+    <span class="kpi-titulo">Total Sueldos Netos Mensuales</span>
+    <span id="personal-total-sueldos" class="kpi-valor">$0</span>
+    <span class="kpi-subtexto">Monto acumulado por empleados</span>
+  </div>
+  <div class="tarjeta-kpi">
+    <span class="kpi-titulo">Horarios del Comercio</span>
+    <span id="personal-horario-local" class="kpi-valor">07:00 a 21:00</span>
+    <span class="kpi-subtexto">Requerido: 14 hs diarias (6 días/sem)</span>
+  </div>
+  <div class="tarjeta-kpi">
+    <span class="kpi-titulo">Horas Semanales Cubiertas</span>
+    <span id="personal-horas-cubiertas" class="kpi-valor">0 hs</span>
+    <span class="kpi-subtexto">Suma de turnos de empleados</span>
+  </div>
+  <div class="tarjeta-kpi">
+    <span class="kpi-titulo">Estado Cobertura Horaria</span>
+    <span id="personal-estado-brecha" class="kpi-valor" style="font-size: 1.2rem; margin-top: 0.5rem; color: var(--color-semaforo-verde-oscuro);">✓ Cubierto</span>
+    <span class="kpi-subtexto">Análisis de desfasaje de turnos</span>
+  </div>
+</div>
+
+<!-- Sub-Sección 1: Gestión de Roles de Trabajo -->
+<div class="tarjeta" style="margin-bottom: 1.5rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h3>Roles de Trabajo & Sueldos Sugeridos</h3>
+    <button id="btn-nuevo-rol" class="btn btn-secundario" style="padding: 0.35rem 0.75rem; font-size: 0.85rem;">
+      ➕ Nuevo Rol
+    </button>
+  </div>
+  <div id="contenedor-roles" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+    <!-- Se llena dinámicamente con las tarjetas de roles -->
+  </div>
+</div>
+
+<!-- Sub-Sección 2: Gestión de Empleados y Turnos -->
+<div class="tarjeta" style="margin-bottom: 1.5rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h3>Nómina de Empleados y Horarios</h3>
+    <button id="btn-nuevo-empleado" class="btn btn-primario">
+      ➕ Agregar Empleado
+    </button>
+  </div>
+
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+      <thead>
+        <tr style="background-color: var(--color-fondo-pagina); border-bottom: 1px solid var(--color-borde);">
+          <th style="padding: 0.75rem 1rem;">Empleado</th>
+          <th style="padding: 0.75rem 1rem;">Rol</th>
+          <th style="padding: 0.75rem 1rem;">Tipo Contrato</th>
+          <th style="padding: 0.75rem 1rem;">Sueldo Neto</th>
+          <th style="padding: 0.75rem 1rem;">Turnos / Horario</th>
+          <th style="padding: 0.75rem 1rem; text-align: center;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-empleados-body">
+        <!-- Se llena dinámicamente -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal para Crear/Editar Rol -->
+<div id="modal-rol" class="modal-overlay">
+  <div class="modal-contenido">
+    <div class="modal-header">
+      <h3 id="modal-rol-titulo">Nuevo Rol de Trabajo</h3>
+      <button id="btn-cerrar-modal-rol" class="btn-cerrar-modal">✖</button>
+    </div>
+    <form id="form-rol">
+      <input type="hidden" id="rol-id">
+      <div style="margin-bottom: 1rem;">
+        <label for="rol-nombre" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del Rol</label>
+        <input type="text" id="rol-nombre" required placeholder="Ej: Cajero, Panadero, Atención al Público..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <label for="rol-sueldo" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Valor por Hora ($)</label>
+        <input type="number" id="rol-sueldo" required min="0" step="1" placeholder="4500" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+        <button type="button" id="btn-cancelar-modal-rol" class="btn btn-secundario">Cancelar</button>
+        <button type="submit" class="btn btn-primario">Guardar Rol</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal para Crear/Editar Empleado -->
+<div id="modal-empleado" class="modal-overlay">
+  <div class="modal-contenido">
+    <div class="modal-header">
+      <h3 id="modal-empleado-titulo">Nuevo Empleado</h3>
+      <button id="btn-cerrar-modal-empleado" class="btn-cerrar-modal">✖</button>
+    </div>
+    <form id="form-empleado">
+      <input type="hidden" id="empleado-id">
+
+      <div style="margin-bottom: 1rem;">
+        <label for="empleado-nombre" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre Completo / Referencia</label>
+        <input type="text" id="empleado-nombre" required placeholder="Ej: Juan Pérez (Turno Mañana)" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+      </div>
+
+      <div style="margin-bottom: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+        <div>
+          <label for="empleado-rol" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Rol Asignado</label>
+          <select id="empleado-rol" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);"></select>
+        </div>
+
+        <div>
+          <label for="empleado-contrato" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Tipo de Contrato</label>
+          <select id="empleado-contrato" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+            <option value="Jornada Completa">Jornada Completa (8 hs)</option>
+            <option value="Jornada Parcial">Jornada Parcial (4 hs)</option>
+            <option value="Horario Flexible">Horario Flexible / Refuerzo</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="empleado-sueldo-preview" style="margin-bottom: 1rem; background-color: var(--color-primario-suave); padding: 0.75rem; border-radius: var(--radio-borde); border: 1px solid var(--color-borde);">
+        <!-- Se llena dinámicamente con la fórmula valorHora * horas * 26 -->
+      </div>
+
+      <div style="margin-bottom: 1rem; background-color: var(--color-fondo-pagina); padding: 0.75rem; border-radius: var(--radio-borde);">
+        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">Configuración de Turno / Horario</label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;">
+          <div>
+            <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">Turno</span>
+            <input type="text" id="empleado-turno-nombre" value="Mañana" style="width: 100%; padding: 0.35rem; font-size: 0.85rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+          </div>
+          <div>
+            <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">Entrada</span>
+            <select id="empleado-turno-inicio" style="width: 100%; padding: 0.35rem; font-size: 0.85rem; border: 1px solid var(--color-borde); border-radius: 4px; font-weight: 600;"></select>
+          </div>
+          <div>
+            <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">Salida</span>
+            <select id="empleado-turno-fin" style="width: 100%; padding: 0.35rem; font-size: 0.85rem; border: 1px solid var(--color-borde); border-radius: 4px; font-weight: 600;"></select>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+        <button type="button" id="btn-cancelar-modal-empleado" class="btn btn-secundario">Cancelar</button>
+        <button type="submit" class="btn btn-primario">Guardar Empleado</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,114 @@
+<div class="modulo-header">
+  <h2>Gestión de Proyectos, Locales & Horarios del Comercio</h2>
+  <p>Administra múltiples proyectos de negocio, locales comerciales y sus configuraciones de horario de atención.</p>
+</div>
+
+<!-- Proyectos -->
+<div class="tarjeta" style="margin-bottom: 1.5rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <div>
+      <h3>Proyectos de Negocio</h3>
+      <p style="font-size: 0.85rem; color: var(--color-texto-secundario);">Selecciona el proyecto activo o crea uno nuevo para simular.</p>
+    </div>
+    <button id="btn-nuevo-proyecto" class="btn btn-primario">➕ Nuevo Proyecto</button>
+  </div>
+  <div id="lista-proyectos-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;"></div>
+</div>
+
+<!-- Locales del Proyecto Activo -->
+<div class="tarjeta" style="margin-bottom: 1.5rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <div>
+      <h3>Locales Comerciales & Horarios de Atención</h3>
+      <p style="font-size: 0.85rem; color: var(--color-texto-secundario);">Configura los datos del local, venta proyectada y rango de apertura/cierre.</p>
+    </div>
+    <button id="btn-nuevo-local" class="btn btn-primario">➕ Agregar Local</button>
+  </div>
+
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+      <thead>
+        <tr style="background-color: var(--color-fondo-pagina); border-bottom: 1px solid var(--color-borde);">
+          <th style="padding: 0.75rem 1rem;">Nombre del Local</th>
+          <th style="padding: 0.75rem 1rem;">Dirección</th>
+          <th style="padding: 0.75rem 1rem;">Horario Comercial</th>
+          <th style="padding: 0.75rem 1rem;">Días / Semana</th>
+          <th style="padding: 0.75rem 1rem;">Ventas Mín. Zona</th>
+          <th style="padding: 0.75rem 1rem; text-align: center;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-locales-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Proyecto -->
+<div id="modal-proyecto" class="modal-overlay">
+  <div class="modal-contenido">
+    <div class="modal-header">
+      <h3 id="modal-proyecto-titulo">Nuevo Proyecto</h3>
+      <button id="btn-cerrar-modal-proyecto" class="btn-cerrar-modal">✖</button>
+    </div>
+    <form id="form-proyecto">
+      <input type="hidden" id="proyecto-modal-id">
+      <div style="margin-bottom: 1rem;">
+        <label for="proyecto-modal-nombre" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del Proyecto</label>
+        <input type="text" id="proyecto-modal-nombre" required placeholder="Ej: Panadería & Confitería, Gastronomía..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <label for="proyecto-modal-descripcion" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Descripción</label>
+        <textarea id="proyecto-modal-descripcion" rows="3" placeholder="Breve resumen del tipo de negocio..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde); font-family: inherit;"></textarea>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+        <button type="button" id="btn-cancelar-modal-proyecto" class="btn btn-secundario">Cancelar</button>
+        <button type="submit" class="btn btn-primario">Guardar Proyecto</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Local -->
+<div id="modal-local" class="modal-overlay">
+  <div class="modal-contenido" style="max-width: 680px; width: 90%;">
+    <div class="modal-header">
+      <h3 id="modal-local-titulo">Nuevo Local Comercial</h3>
+      <button id="btn-cerrar-modal-local" class="btn-cerrar-modal">✖</button>
+    </div>
+    <form id="form-local">
+      <input type="hidden" id="local-modal-id">
+      
+      <div style="margin-bottom: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+        <div>
+          <label for="local-modal-nombre" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del Local</label>
+          <input type="text" id="local-modal-nombre" required placeholder="Ej: Local Centro, Sucursal Belgrano..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+        </div>
+        <div>
+          <label for="local-modal-direccion" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Dirección del Inmueble</label>
+          <input type="text" id="local-modal-direccion" placeholder="Ej: Av. Principal #1040" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+        </div>
+      </div>
+
+      <!-- Configuración de Horarios Semanales Detallados -->
+      <div style="margin-bottom: 1rem; background-color: var(--color-fondo-pagina); padding: 1rem; border-radius: var(--radio-borde); border: 1px solid var(--color-borde);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <h4 style="margin: 0; font-size: 0.95rem; color: var(--color-texto-principal);">Horarios de Atención Semanales del Comercio</h4>
+          <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">Permite turnos cortados y días cerrados</span>
+        </div>
+
+        <div id="contenedor-horarios-dias" style="display: flex; flex-direction: column; gap: 0.6rem; max-height: 280px; overflow-y: auto; padding-right: 0.25rem;">
+          <!-- Se genera dinámicamente para los 7 días de la semana -->
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label for="local-modal-ventas-min" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Estimado Venta Mínima de la Zona ($)</label>
+        <input type="number" id="local-modal-ventas-min" required min="0" step="100000" placeholder="15000000" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+        <button type="button" id="btn-cancelar-modal-local" class="btn btn-secundario">Cancelar</button>
+        <button type="submit" class="btn btn-primario">Guardar Local</button>
+      </div>
+    </form>
+  </div>
+</div>

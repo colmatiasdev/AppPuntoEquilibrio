@@ -23,13 +23,23 @@ window.ClienteSupabase = {
   },
 
   cargarCredenciales() {
-    let storedUrl = localStorage.getItem('supabase_url') || '';
+    const config = window.CONFIG_SUPABASE || {};
+    
+    let storedUrl = localStorage.getItem('supabase_url') || config.url || '';
     storedUrl = storedUrl.replace(/\/rest\/v1\/?$/i, '').replace(/\/+$/, '');
     if (storedUrl) localStorage.setItem('supabase_url', storedUrl);
 
     this.url = storedUrl;
-    this.key = localStorage.getItem('supabase_key') || '';
-    this.sincronizacionActiva = !!(this.url && this.key);
+    this.key = localStorage.getItem('supabase_key') || config.key || '';
+    
+    // Si hay credenciales de config.js pero no estaban en localStorage, guardarlas
+    if (this.url && this.key) {
+      if (!localStorage.getItem('supabase_key')) localStorage.setItem('supabase_key', this.key);
+      this.sincronizacionActiva = true;
+    } else {
+      this.sincronizacionActiva = false;
+    }
+    
     this.ultimaSincronizacion = localStorage.getItem('supabase_last_sync') || null;
   },
 

@@ -17,21 +17,92 @@ window.ModuloProyectos = {
     { clave: 'domingo', nombre: 'Domingo' }
   ],
 
-  inicializar() {
-    this.cargarDatos();
+  async inicializar() {
+    await this.cargarDatos();
     if (!this.eventosConfigurados) {
       this.configurarEventos();
       this.eventosConfigurados = true;
     }
   },
 
-  cargarDatos() {
-    const estado = window.BaseDatos.obtenerEstado();
-    this.proyectos = estado.proyectos;
-    this.locales = estado.locales;
+  async cargarDatos() {
+    if (window.mostrarSpinner) window.mostrarSpinner('Cargando proyectos y locales desde la Base de Datos...');
+    try {
+      const estado = window.BaseDatos.obtenerEstado();
 
-    this.renderizarListaProyectos();
-    this.renderizarListaLocales();
+      if (window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva) {
+        let empsRel = await window.RepositorioRelacional.obtenerEmpresas();
+
+        // Si la base de datos de Supabase no tiene empresas creadas, inicializar una Empresa real
+        if (!empsRel || empsRel.length === 0) {
+          const empCreada = await window.RepositorioRelacional.guardarEmpresa({
+            nombre: 'Mi Empresa'
+          });
+          if (empCreada && empCreada.id) {
+            empsRel = [empCreada];
+            await window.RepositorioRelacional.guardarLocal({
+              empresa_id: empCreada.id,
+              nombre: 'Local Principal'
+            });
+          }
+        }
+
+        if (empsRel && empsRel.length > 0) {
+          this.proyectos = empsRel.map(e => ({
+            id: e.id,
+            nombre: e.nombre,
+            descripcion: e.razon_social || e.rubro || '',
+            logo: e.logo_url || null
+          }));
+          estado.proyectos = this.proyectos;
+
+          if (!estado.idProyectoActivo || !this.proyectos.some(p => p.id === estado.idProyectoActivo)) {
+            estado.idProyectoActivo = this.proyectos[0].id;
+          }
+        } else {
+          this.proyectos = estado.proyectos;
+        }
+
+        // Cargar TODOS los locales de la DB para mapear correctamente a cada empresa
+        let todosLocsRel = await window.RepositorioRelacional.obtenerTodosLosLocales();
+        if (todosLocsRel && todosLocsRel.length > 0) {
+          this.locales = todosLocsRel.map(l => ({
+            id: l.id,
+            idProyecto: l.empresa_id,
+            nombre: l.nombre,
+            direccion: l.direccion || '',
+            horarioSemanal: (l.horarios_locales && l.horarios_locales.length > 0)
+              ? this.convertirHorariosDBaLocal(l.horarios_locales)
+              : this.crearHorarioSemanalVacio(),
+            estimadoVentasMinimasZona: l.estimado_ventas_minimas_zona || 0
+          }));
+          estado.locales = this.locales;
+
+          const localesActivos = this.locales.filter(l => l.idProyecto === estado.idProyectoActivo);
+          if (localesActivos.length > 0) {
+            if (!estado.idLocalActivo || !localesActivos.some(l => l.id === estado.idLocalActivo)) {
+              estado.idLocalActivo = localesActivos[0].id;
+            }
+          }
+        } else {
+          this.locales = estado.locales;
+        }
+        window.BaseDatos.guardar();
+      } else {
+        this.proyectos = estado.proyectos;
+        this.locales = estado.locales;
+      }
+
+      this.renderizarListaProyectos();
+      this.renderizarListaLocales();
+      if (window.cargarSelectoresContexto) {
+        window.cargarSelectoresContexto();
+      }
+    } catch (err) {
+      console.error('[ModuloProyectos] Error al cargar desde Supabase:', err);
+    } finally {
+      if (window.ocultarSpinner) window.ocultarSpinner();
+    }
   },
 
   renderizarListaProyectos() {
@@ -49,6 +120,9 @@ window.ModuloProyectos = {
     this.proyectos.forEach(proy => {
       const esActivo = proy.id === estado.idProyectoActivo;
       const localesProyecto = this.locales.filter(l => l.idProyecto === proy.id);
+      const logoHtml = proy.logo
+        ? `<img src="${proy.logo}" alt="${proy.nombre}" style="width: 48px; height: 48px; border-radius: 10px; object-fit: cover; border: 1px solid var(--color-borde); flex-shrink: 0;">`
+        : `<div style="width: 48px; height: 48px; border-radius: 10px; background-color: var(--color-primario-suave); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">🏬</div>`;
 
       const card = document.createElement('div');
       card.style.cssText = `
@@ -65,9 +139,15 @@ window.ModuloProyectos = {
 
       card.innerHTML = `
         <div>
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
-            <h3 style="font-size: 1.1rem; margin: 0;">${proy.nombre}</h3>
-            ${esActivo ? '<span style="background-color: var(--color-primario-suave); color: var(--color-primario); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">ACTIVO</span>' : ''}
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; gap: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; overflow: hidden;">
+              ${logoHtml}
+              <div style="overflow: hidden;">
+                <h3 style="font-size: 1.1rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${proy.nombre}</h3>
+                <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">ID: ${proy.id}</span>
+              </div>
+            </div>
+            ${esActivo ? '<span style="background-color: var(--color-primario-suave); color: var(--color-primario); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">ACTIVO</span>' : ''}
           </div>
           <p style="font-size: 0.85rem; color: var(--color-texto-secundario); margin: 0; line-height: 1.4;">${proy.descripcion || 'Sin descripción'}</p>
           <div style="margin-top: 0.75rem; font-size: 0.8rem; color: var(--color-texto-mutado);">
@@ -160,10 +240,10 @@ window.ModuloProyectos = {
     }
 
     // Fallback estructura vieja
-    const hc = local.horariosComercio || { horarioApertura: '08:00', horarioCierre: '20:00', diasPorSemana: 6 };
+    const hc = local.horariosComercio || {};
     return {
-      diasAbiertos: hc.diasPorSemana || 6,
-      textoHorario: `${hc.horarioApertura} a ${hc.horarioCierre} hs (${hc.horasOperativasDiarias || 12} hs/día)`
+      diasAbiertos: hc.diasPorSemana || 0,
+      textoHorario: hc.horarioApertura ? `${hc.horarioApertura} a ${hc.horarioCierre} hs` : 'Sin horario configurado'
     };
   },
 
@@ -173,10 +253,10 @@ window.ModuloProyectos = {
 
     contenedor.innerHTML = '';
 
-    const horarioSemanal = (local && local.horarioSemanal) ? local.horarioSemanal : this.crearHorarioSemanalPorDefecto();
+    const horarioSemanal = (local && local.horarioSemanal) ? local.horarioSemanal : this.crearHorarioSemanalVacio();
 
     this.DIAS_SEMANA.forEach(d => {
-      const confDia = horarioSemanal[d.clave] || { abierto: (d.clave !== 'domingo'), turnos: [{ inicio: '08:00', fin: '20:00' }] };
+      const confDia = horarioSemanal[d.clave] || { abierto: false, turnos: [] };
 
       const fila = document.createElement('div');
       fila.className = 'dia-horario-row';
@@ -221,12 +301,12 @@ window.ModuloProyectos = {
         divTurnos.style.display = estaAbierto ? 'flex' : 'none';
         btnAdd.style.display = estaAbierto ? 'inline-block' : 'none';
         if (estaAbierto && divTurnos.children.length === 0) {
-          divTurnos.appendChild(this.crearFilaTurnoDOM(d.clave, '08:00', '20:00', false));
+          divTurnos.appendChild(this.crearFilaTurnoDOM(d.clave, '', '', false));
         }
       });
 
       btnAdd.addEventListener('click', () => {
-        divTurnos.appendChild(this.crearFilaTurnoDOM(d.clave, '17:00', '21:00', true));
+        divTurnos.appendChild(this.crearFilaTurnoDOM(d.clave, '', '', true));
       });
 
       fila.appendChild(headerDia);
@@ -286,30 +366,79 @@ window.ModuloProyectos = {
     return select;
   },
 
-  crearHorarioSemanalPorDefecto() {
+  crearHorarioSemanalVacio() {
     const def = {};
     this.DIAS_SEMANA.forEach(d => {
       def[d.clave] = {
-        abierto: d.clave !== 'domingo',
-        turnos: [{ inicio: '07:00', fin: '21:00' }]
+        abierto: false,
+        turnos: []
       };
     });
     return def;
   },
 
+  /**
+   * Convierte el array de horarios_locales de la DB (PostgREST) al formato objeto
+   * que usa internamente la app: { lunes: { abierto, turnos: [{inicio, fin}] }, ... }
+   */
+  convertirHorariosDBaLocal(horariosDB) {
+    const MAPA_INT_A_CLAVE = { 1: 'lunes', 2: 'martes', 3: 'miercoles', 4: 'jueves', 5: 'viernes', 6: 'sabado', 7: 'domingo' };
+    const resultado = this.crearHorarioSemanalVacio();
+
+    horariosDB.forEach(h => {
+      const claveDia = MAPA_INT_A_CLAVE[h.dia_semana];
+      if (!claveDia) return;
+
+      // Formatear hora: DB trae "07:00:00" (TIME), convertir a "07:00"
+      const horaApertura = (h.hora_apertura || '').substring(0, 5);
+      const horaCierre = (h.hora_cierre || '').substring(0, 5);
+
+      if (horaApertura && horaCierre) {
+        resultado[claveDia].abierto = true;
+        resultado[claveDia].turnos.push({ inicio: horaApertura, fin: horaCierre });
+      }
+    });
+
+    return resultado;
+  },
+
   configurarEventos() {
-    // Modal Proyecto
+    // Modal Proyecto & Previsualizador de Logo
     const btnNuevoProy = document.getElementById('btn-nuevo-proyecto');
     const modalProy = document.getElementById('modal-proyecto');
     const btnCerrarProy = document.getElementById('btn-cerrar-modal-proyecto');
     const btnCancelarProy = document.getElementById('btn-cancelar-modal-proyecto');
     const formProy = document.getElementById('form-proyecto');
+    const inputFileLogo = document.getElementById('proyecto-modal-logo-file');
+    const inputHiddenLogo = document.getElementById('proyecto-modal-logo-base64');
+    const imgPreview = document.getElementById('preview-logo-img');
+    const placeholderPreview = document.getElementById('preview-logo-placeholder');
+
+    if (inputFileLogo) {
+      inputFileLogo.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            const base64 = evt.target.result;
+            inputHiddenLogo.value = base64;
+            imgPreview.src = base64;
+            imgPreview.style.display = 'block';
+            placeholderPreview.style.display = 'none';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
 
     if (btnNuevoProy) {
       btnNuevoProy.addEventListener('click', () => {
         document.getElementById('modal-proyecto-titulo').textContent = 'Nuevo Proyecto';
         formProy.reset();
         document.getElementById('proyecto-modal-id').value = '';
+        if (inputHiddenLogo) inputHiddenLogo.value = '';
+        if (imgPreview) { imgPreview.src = ''; imgPreview.style.display = 'none'; }
+        if (placeholderPreview) placeholderPreview.style.display = 'block';
         modalProy.classList.add('activo');
       });
     }
@@ -372,27 +501,48 @@ window.ModuloProyectos = {
           document.getElementById('proyecto-modal-id').value = proy.id;
           document.getElementById('proyecto-modal-nombre').value = proy.nombre;
           document.getElementById('proyecto-modal-descripcion').value = proy.descripcion || '';
+          
+          const inputHiddenLogo = document.getElementById('proyecto-modal-logo-base64');
+          const imgPreview = document.getElementById('preview-logo-img');
+          const placeholderPreview = document.getElementById('preview-logo-placeholder');
+          
+          if (proy.logo) {
+            if (inputHiddenLogo) inputHiddenLogo.value = proy.logo;
+            if (imgPreview) { imgPreview.src = proy.logo; imgPreview.style.display = 'block'; }
+            if (placeholderPreview) placeholderPreview.style.display = 'none';
+          } else {
+            if (inputHiddenLogo) inputHiddenLogo.value = '';
+            if (imgPreview) { imgPreview.src = ''; imgPreview.style.display = 'none'; }
+            if (placeholderPreview) placeholderPreview.style.display = 'block';
+          }
+
           document.getElementById('modal-proyecto').classList.add('activo');
         }
       };
     });
 
     document.querySelectorAll('.btn-eliminar-proyecto').forEach(btn => {
-      btn.onclick = (e) => {
+      btn.onclick = async (e) => {
         const id = e.currentTarget.getAttribute('data-id');
         const estado = window.BaseDatos.obtenerEstado();
-        if (estado.proyectos.length <= 1) {
+        if (this.proyectos.length <= 1) {
           alert('No podés eliminar el único proyecto del sistema.');
           return;
         }
+        if (!confirm('¿Estás seguro de eliminar este proyecto y sus locales?')) return;
+
+        if (window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva) {
+          await window.RepositorioRelacional.eliminarEmpresa(id);
+        }
+
         estado.proyectos = estado.proyectos.filter(p => p.id !== id);
         estado.locales = estado.locales.filter(l => l.idProyecto !== id);
         if (estado.idProyectoActivo === id) {
-          estado.idProyectoActivo = estado.proyectos[0].id;
-          const locs = estado.locales.filter(l => l.idProyecto === estado.idProyectoActivo);
-          if (locs.length > 0) estado.idLocalActivo = locs[0].id;
+          const proysRestantes = estado.proyectos.filter(p => p.id !== id);
+          if (proysRestantes.length > 0) estado.idProyectoActivo = proysRestantes[0].id;
         }
         window.BaseDatos.guardar();
+        await this.cargarDatos();
         if (window.actualizarModulosActivos) window.actualizarModulosActivos();
       };
     });
@@ -400,9 +550,10 @@ window.ModuloProyectos = {
 
   asignarEventosLocales() {
     document.querySelectorAll('.btn-activar-local').forEach(btn => {
-      btn.onclick = (e) => {
+      btn.onclick = async (e) => {
         const id = e.currentTarget.getAttribute('data-id');
         window.BaseDatos.seleccionarLocal(id);
+        await this.cargarDatos();
         if (window.actualizarModulosActivos) window.actualizarModulosActivos();
       };
     });
@@ -424,58 +575,85 @@ window.ModuloProyectos = {
     });
 
     document.querySelectorAll('.btn-eliminar-local').forEach(btn => {
-      btn.onclick = (e) => {
+      btn.onclick = async (e) => {
         const id = e.currentTarget.getAttribute('data-id');
         const estado = window.BaseDatos.obtenerEstado();
-        const localesActuales = estado.locales.filter(l => l.idProyecto === estado.idProyectoActivo);
+        const localesActuales = this.locales.filter(l => l.idProyecto === estado.idProyectoActivo);
         if (localesActuales.length <= 1) {
           alert('Debe haber al menos un local comercial por proyecto.');
           return;
         }
+        if (!confirm('¿Estás seguro de eliminar este local comercial?')) return;
+
+        if (window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva) {
+          await window.RepositorioRelacional.eliminarLocal(id);
+        }
+
         estado.locales = estado.locales.filter(l => l.id !== id);
         if (estado.idLocalActivo === id) {
           const locs = estado.locales.filter(l => l.idProyecto === estado.idProyectoActivo);
           if (locs.length > 0) estado.idLocalActivo = locs[0].id;
         }
         window.BaseDatos.guardar();
+        await this.cargarDatos();
         if (window.actualizarModulosActivos) window.actualizarModulosActivos();
       };
     });
   },
 
-  guardarProyecto() {
+  async guardarProyecto() {
     const estado = window.BaseDatos.obtenerEstado();
     const id = document.getElementById('proyecto-modal-id').value;
     const nombre = document.getElementById('proyecto-modal-nombre').value;
     const descripcion = document.getElementById('proyecto-modal-descripcion').value;
+    const logoInput = document.getElementById('proyecto-modal-logo-base64');
+    const logo = logoInput ? logoInput.value : '';
 
     if (id) {
       const proy = estado.proyectos.find(p => p.id === id);
       if (proy) {
         proy.nombre = nombre;
         proy.descripcion = descripcion;
+        proy.logo = logo;
       }
     } else {
       const nuevoId = `proy_${Date.now()}`;
-      estado.proyectos.push({ id: nuevoId, nombre, descripcion });
-      // Crear un local inicial por defecto para el proyecto
+      estado.proyectos.push({ id: nuevoId, nombre, descripcion, logo });
       estado.locales.push({
         id: `loc_${Date.now()}`,
         idProyecto: nuevoId,
         nombre: 'Local Principal',
-        direccion: 'Dirección a definir',
-        horarioSemanal: this.crearHorarioSemanalPorDefecto(),
-        estimadoVentasMinimasZona: 10000000
+        direccion: '',
+        horarioSemanal: this.crearHorarioSemanalVacio(),
+        estimadoVentasMinimasZona: 0
       });
       estado.idProyectoActivo = nuevoId;
     }
 
+    // Persistir estado global si la nube JSON esta activa
     window.BaseDatos.guardar();
-    this.cargarDatos();
+
+    // Sincronizar en la tabla relacional de Supabase si la conexion esta activa
+    if (window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva) {
+      try {
+        const payloadEmpresa = {
+          nombre: nombre,
+          razon_social: nombre,
+          logo_url: logo
+        };
+        if (id) payloadEmpresa.id = id;
+
+        await window.RepositorioRelacional.guardarEmpresa(payloadEmpresa);
+      } catch (err) {
+        console.warn('[ModuloProyectos] Error al sincronizar empresa en tabla relacional:', err);
+      }
+    }
+
+    await this.cargarDatos();
     window.cargarSelectoresContexto();
   },
 
-  guardarLocal() {
+  async guardarLocal() {
     const estado = window.BaseDatos.obtenerEstado();
     const id = document.getElementById('local-modal-id').value;
     const nombre = document.getElementById('local-modal-nombre').value;
@@ -484,6 +662,9 @@ window.ModuloProyectos = {
 
     // Extraer horario semanal por día desde la grilla del formulario
     const horarioSemanal = {};
+    const arregloHorariosRelacionales = [];
+    const MAPA_DIAS_INT = { 'lunes': 1, 'martes': 2, 'miercoles': 3, 'jueves': 4, 'viernes': 5, 'sabado': 6, 'domingo': 7 };
+
     this.DIAS_SEMANA.forEach(d => {
       const divDia = document.getElementById(`turnos-dia-${d.clave}`);
       const chk = document.querySelector(`.chk-dia-abierto[data-dia="${d.clave}"]`);
@@ -497,6 +678,11 @@ window.ModuloProyectos = {
           const fin = row.querySelector('.input-hora-fin').value;
           if (inicio && fin) {
             turnos.push({ inicio, fin });
+            arregloHorariosRelacionales.push({
+              dia_semana: MAPA_DIAS_INT[d.clave],
+              hora_apertura: inicio,
+              hora_cierre: fin
+            });
           }
         });
       }
@@ -514,18 +700,43 @@ window.ModuloProyectos = {
       estimadoVentasMinimasZona
     };
 
+    let targetLocalId = id;
+
     if (id) {
       const local = estado.locales.find(l => l.id === id);
       if (local) Object.assign(local, datosLocal);
     } else {
-      datosLocal.id = `loc_${Date.now()}`;
+      targetLocalId = `loc_${Date.now()}`;
+      datosLocal.id = targetLocalId;
       datosLocal.idProyecto = estado.idProyectoActivo;
       estado.locales.push(datosLocal);
       estado.idLocalActivo = datosLocal.id;
     }
 
+    // Persistir localmente
     window.BaseDatos.guardar();
-    this.cargarDatos();
+
+    // Sincronizar en la tabla relacional 'locales' y 'horarios_locales' de Supabase
+    if (window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva) {
+      try {
+        const payloadLocal = {
+          empresa_id: estado.idProyectoActivo || 'e0000000-0000-4000-8000-000000000001',
+          nombre: nombre,
+          direccion: direccion
+        };
+        if (id) payloadLocal.id = id;
+
+        const localRelacional = await window.RepositorioRelacional.guardarLocal(payloadLocal);
+
+        if (localRelacional && localRelacional.id) {
+          await window.RepositorioRelacional.guardarHorariosLocal(localRelacional.id, arregloHorariosRelacionales);
+        }
+      } catch (err) {
+        console.warn('[ModuloProyectos] Error al guardar local en tabla relacional:', err);
+      }
+    }
+
+    await this.cargarDatos();
     window.cargarSelectoresContexto();
     if (window.ModuloPersonal) window.ModuloPersonal.cargarDatos();
   }

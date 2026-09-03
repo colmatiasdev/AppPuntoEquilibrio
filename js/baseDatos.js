@@ -72,27 +72,8 @@ const DATOS_SEMILLA = {
       "estaActivo": true
     }
   ],
-  roles: [
-    {
-      id: "rol_01",
-      idLocal: "loc_01",
-      nombre: "Atención al Público / Reposidor",
-      sueldoNeto: 350000
-    }
-  ],
-  empleados: [
-    {
-      id: "emp_01",
-      idLocal: "loc_01",
-      idRol: "rol_01",
-      nombre: "Empleado Turno Mañana",
-      tipoContrato: "Jornada Completa",
-      sueldoNeto: 350000,
-      turnos: [
-        { nombre: "Mañana", horaInicio: "07:00", horaFin: "15:00", totalHoras: 8 }
-      ]
-    }
-  ],
+  roles: [],
+  empleados: [],
   categoriasProductos: [
     {
       id: "cat_01",
@@ -271,39 +252,29 @@ class BaseDatosManager {
   }
 
   inicializar() {
-    const datosGuardados = localStorage.getItem(CLAVE_LOCAL_STORAGE);
-    if (datosGuardados) {
-      try {
-        this.estado = JSON.parse(datosGuardados);
-        let huboCambios = false;
-        if (!this.estado.canalesCobro) { this.estado.canalesCobro = DATOS_SEMILLA.canalesCobro; huboCambios = true; }
-        if (!this.estado.proveedores) { this.estado.proveedores = DATOS_SEMILLA.proveedores; huboCambios = true; }
-        if (!this.estado.mayoristas) { this.estado.mayoristas = DATOS_SEMILLA.mayoristas; huboCambios = true; }
-        if (!this.estado.comprasProveedores) { this.estado.comprasProveedores = DATOS_SEMILLA.comprasProveedores; huboCambios = true; }
-        if (!this.estado.cajaDiaria) { this.estado.cajaDiaria = DATOS_SEMILLA.cajaDiaria; huboCambios = true; }
-        if (!this.estado.movimientosMayoristas) { this.estado.movimientosMayoristas = DATOS_SEMILLA.movimientosMayoristas; huboCambios = true; }
-        if (!this.estado.cuentasBancarias) { this.estado.cuentasBancarias = DATOS_SEMILLA.cuentasBancarias; huboCambios = true; }
-        if (!this.estado.movimientosCuentas || this.estado.movimientosCuentas.length === 0) { 
-          this.estado.movimientosCuentas = DATOS_SEMILLA.movimientosCuentas; 
-          huboCambios = true; 
-        }
-        if (!this.estado.registrosReales) { this.estado.registrosReales = []; huboCambios = true; }
-        if (huboCambios) this.guardar();
-      } catch (error) {
-        console.error("Error al parsear LocalStorage. Inicializando con datos por defecto.", error);
-        this.reiniciarConDatosSemilla();
-      }
-    } else {
-      this.reiniciarConDatosSemilla();
+    // Si existía el dato legacy en localStorage, se limpia
+    if (localStorage.getItem(CLAVE_LOCAL_STORAGE)) {
+      localStorage.removeItem(CLAVE_LOCAL_STORAGE);
     }
+    this.estado = JSON.parse(JSON.stringify(DATOS_SEMILLA));
   }
 
-  guardar() {
+  guardar(sincronizarNube = true) {
     try {
-      localStorage.setItem(CLAVE_LOCAL_STORAGE, JSON.stringify(this.estado));
+      // Ya no se guarda la tabla completa en LocalStorage. 
+      // Se limpia si aún existía.
+      if (localStorage.getItem(CLAVE_LOCAL_STORAGE)) {
+        localStorage.removeItem(CLAVE_LOCAL_STORAGE);
+      }
+
+      // Sincronizar en tiempo real con Supabase si está activo
+      if (sincronizarNube && window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva) {
+        window.ClienteSupabase.guardarEnNube(this.estado);
+      }
+
       return true;
     } catch (error) {
-      console.error("Error al guardar en LocalStorage", error);
+      console.error("Error al sincronizar estado", error);
       return false;
     }
   }
@@ -338,7 +309,10 @@ class BaseDatosManager {
     const categoriasId = this.estado.categoriasProductos
       .filter(c => c.idProyecto === this.estado.idProyectoActivo)
       .map(c => c.id);
-    return this.estado.productos.filter(p => categoriasId.includes(p.idCategoria));
+
+    return this.estado.productos.filter(p => 
+      p.idProyecto === this.estado.idProyectoActivo || categoriasId.includes(p.idCategoria)
+    );
   }
 
   // PROVEEDORES

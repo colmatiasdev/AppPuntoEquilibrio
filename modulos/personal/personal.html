@@ -12,8 +12,8 @@
   </div>
   <div class="tarjeta-kpi">
     <span class="kpi-titulo">Horarios del Comercio</span>
-    <span id="personal-horario-local" class="kpi-valor">07:00 a 21:00</span>
-    <span class="kpi-subtexto">Requerido: 14 hs diarias (6 días/sem)</span>
+    <span id="personal-horario-local" class="kpi-valor">Sin configurar</span>
+    <span class="kpi-subtexto">Configure horarios del local</span>
   </div>
   <div class="tarjeta-kpi">
     <span class="kpi-titulo">Horas Semanales Cubiertas</span>
@@ -128,21 +128,13 @@
         <!-- Se llena dinámicamente con la fórmula valorHora * horas * 26 -->
       </div>
 
-      <div style="margin-bottom: 1rem; background-color: var(--color-fondo-pagina); padding: 0.75rem; border-radius: var(--radio-borde);">
-        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">Configuración de Turno / Horario</label>
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;">
-          <div>
-            <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">Turno</span>
-            <input type="text" id="empleado-turno-nombre" value="Mañana" style="width: 100%; padding: 0.35rem; font-size: 0.85rem; border: 1px solid var(--color-borde); border-radius: 4px;">
-          </div>
-          <div>
-            <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">Entrada</span>
-            <select id="empleado-turno-inicio" style="width: 100%; padding: 0.35rem; font-size: 0.85rem; border: 1px solid var(--color-borde); border-radius: 4px; font-weight: 600;"></select>
-          </div>
-          <div>
-            <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">Salida</span>
-            <select id="empleado-turno-fin" style="width: 100%; padding: 0.35rem; font-size: 0.85rem; border: 1px solid var(--color-borde); border-radius: 4px; font-weight: 600;"></select>
-          </div>
+      <div style="margin-bottom: 1rem; background-color: var(--color-fondo-pagina); padding: 0.75rem; border-radius: var(--radio-borde); border: 1px solid var(--color-borde);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; gap: 0.5rem; flex-wrap: wrap;">
+          <label style="font-size: 0.85rem; font-weight: 700;">Días y Horarios de Cobertura Semanal</label>
+          <button type="button" id="btn-copiar-horario-empleado" class="btn btn-secundario" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;">⚡ Replicar primer horario</button>
+        </div>
+        <div id="contenedor-horarios-empleado-dias" style="display: flex; flex-direction: column; gap: 0.4rem; max-height: 240px; overflow-y: auto; padding-right: 4px;">
+          <!-- Generado dinámicamente en personal.js -->
         </div>
       </div>
 

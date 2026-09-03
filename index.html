@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simulador & Analizador de Punto de Equilibrio Comercial</title>
   <link rel="stylesheet" href="css/estilos.css">
 </head>
+
 <body>
 
   <div id="app-container">
@@ -104,13 +106,19 @@
       <header id="topbar">
         <div class="topbar-left">
           <button id="btn-toggle-sidebar" class="btn-toggle-sidebar" title="Ocultar/Mostrar Menú">☰</button>
-          
-          <div class="selector-contexto">
-            <label for="select-proyecto">Proyecto:</label>
-            <select id="select-proyecto"></select>
 
-            <label for="select-local">Local:</label>
-            <select id="select-local"></select>
+          <div class="selector-contexto" style="display: flex; align-items: center; gap: 0.75rem;">
+            <div id="topbar-logo-proyecto"
+              style="width: 34px; height: 34px; border-radius: 8px; overflow: hidden; background: var(--color-primario-suave); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; border: 1px solid var(--color-borde); flex-shrink: 0;">
+              🏬
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <label for="select-proyecto">Proyecto:</label>
+              <select id="select-proyecto"></select>
+
+              <label for="select-local">Local:</label>
+              <select id="select-local"></select>
+            </div>
           </div>
         </div>
 
@@ -185,10 +193,13 @@
           </div>
 
           <!-- Barra de Acciones y Filtros -->
-          <div class="tarjeta" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+          <div class="tarjeta"
+            style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
             <div style="display: flex; gap: 0.5rem; align-items: center;">
-              <input type="text" id="input-buscar-gasto" placeholder="Buscar gasto..." style="padding: 0.5rem 0.75rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde); font-size: 0.9rem;">
-              <select id="select-filtro-categoria" style="padding: 0.5rem 0.75rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde); font-size: 0.9rem;">
+              <input type="text" id="input-buscar-gasto" placeholder="Buscar gasto..."
+                style="padding: 0.5rem 0.75rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde); font-size: 0.9rem;">
+              <select id="select-filtro-categoria"
+                style="padding: 0.5rem 0.75rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde); font-size: 0.9rem;">
                 <option value="todas">Todas las Categorías</option>
               </select>
             </div>
@@ -231,27 +242,29 @@
                 <input type="hidden" id="gasto-id">
 
                 <div style="margin-bottom: 1rem;">
-                  <label for="gasto-nombre" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del Gasto / Servicio</label>
-                  <input type="text" id="gasto-nombre" required placeholder="Ej: Luz Comercial, Alquiler, Gas..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                  <label for="gasto-nombre"
+                    style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del
+                    Gasto / Servicio</label>
+                  <input type="text" id="gasto-nombre" required placeholder="Ej: Luz Comercial, Alquiler, Gas..."
+                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                 </div>
 
                 <div style="margin-bottom: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
                   <div>
-                    <label for="gasto-categoria" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Categoría</label>
-                    <select id="gasto-categoria" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
-                      <option value="Alquiler">Alquiler</option>
-                      <option value="Servicios Públicos">Servicios Públicos</option>
-                      <option value="Impuestos & Tasas">Impuestos & Tasas</option>
-                      <option value="Servicios Comerciales">Servicios Comerciales (Internet, Alarma)</option>
-                      <option value="Gastos Contrato">Gastos Contrato / Comisiones</option>
-                      <option value="Mantenimiento">Mantenimiento</option>
-                      <option value="Otros">Otros</option>
+                    <label for="gasto-categoria"
+                      style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Categoría</label>
+                    <select id="gasto-categoria" required
+                      style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                      <option value="" disabled selected>Cargando categorías...</option>
                     </select>
                   </div>
 
                   <div>
-                    <label for="gasto-frecuencia" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Frecuencia de Pago</label>
-                    <select id="gasto-frecuencia" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                    <label for="gasto-frecuencia"
+                      style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Frecuencia
+                      de Pago</label>
+                    <select id="gasto-frecuencia" required
+                      style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                       <option value="Diaria">Diaria</option>
                       <option value="Semanal">Semanal</option>
                       <option value="Mensual" selected>Mensual</option>
@@ -262,11 +275,15 @@
                 </div>
 
                 <div style="margin-bottom: 1rem;">
-                  <label for="gasto-monto" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Monto a Pagar ($)</label>
-                  <input type="number" id="gasto-monto" required min="0" step="100" placeholder="0" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                  <label for="gasto-monto"
+                    style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Monto a Pagar
+                    ($)</label>
+                  <input type="number" id="gasto-monto" required min="0" step="any" placeholder="0"
+                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                 </div>
 
-                <div style="margin-bottom: 1.25rem; background-color: var(--color-fondo-pagina); padding: 0.75rem; border-radius: var(--radio-borde);">
+                <div
+                  style="margin-bottom: 1.25rem; background-color: var(--color-fondo-pagina); padding: 0.75rem; border-radius: var(--radio-borde);">
                   <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; cursor: pointer;">
                     <input type="checkbox" id="gasto-es-contrato">
                     <span>Es un gasto derivado del contrato (Expensas, Comisiones, Indexación)</span>
@@ -298,8 +315,8 @@
             </div>
             <div class="tarjeta-kpi">
               <span class="kpi-titulo">Horarios del Comercio</span>
-              <span id="personal-horario-local" class="kpi-valor">07:00 a 21:00</span>
-              <span class="kpi-subtexto">Requerido: 14 hs diarias (6 días/sem)</span>
+              <span id="personal-horario-local" class="kpi-valor">Sin configurar</span>
+              <span class="kpi-subtexto">Configure horarios del local</span>
             </div>
             <div class="tarjeta-kpi">
               <span class="kpi-titulo">Horas Semanales Cubiertas</span>
@@ -308,7 +325,9 @@
             </div>
             <div class="tarjeta-kpi">
               <span class="kpi-titulo">Estado Cobertura Horaria</span>
-              <span id="personal-estado-brecha" class="kpi-valor" style="font-size: 1.2rem; margin-top: 0.5rem; color: var(--color-semaforo-verde-oscuro);">✓ Cubierto</span>
+              <span id="personal-estado-brecha" class="kpi-valor"
+                style="font-size: 1.2rem; margin-top: 0.5rem; color: var(--color-semaforo-verde-oscuro);">✓
+                Cubierto</span>
               <span class="kpi-subtexto">Análisis de desfasaje de turnos</span>
             </div>
           </div>
@@ -317,7 +336,8 @@
           <div class="tarjeta" style="margin-bottom: 1.5rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
               <h3>Roles de Trabajo & Sueldos Sugeridos</h3>
-              <button id="btn-nuevo-rol" class="btn btn-secundario" style="padding: 0.35rem 0.75rem; font-size: 0.85rem;">
+              <button id="btn-nuevo-rol" class="btn btn-secundario"
+                style="padding: 0.35rem 0.75rem; font-size: 0.85rem;">
                 ➕ Nuevo Rol
               </button>
             </div>
@@ -364,12 +384,18 @@
               <form id="form-rol">
                 <input type="hidden" id="rol-id">
                 <div style="margin-bottom: 1rem;">
-                  <label for="rol-nombre" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del Rol</label>
-                  <input type="text" id="rol-nombre" required placeholder="Ej: Cajero, Panadero, Atención al Público..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                  <label for="rol-nombre"
+                    style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del
+                    Rol</label>
+                  <input type="text" id="rol-nombre" required placeholder="Ej: Cajero, Panadero, Atención al Público..."
+                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                 </div>
                 <div style="margin-bottom: 1rem;">
-                  <label for="rol-sueldo" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Valor por Hora ($)</label>
-                  <input type="number" id="rol-sueldo" required min="0" step="1" placeholder="4500" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                  <label for="rol-sueldo"
+                    style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Valor por Hora
+                    ($)</label>
+                  <input type="number" id="rol-sueldo" required min="0" step="1" placeholder="4500"
+                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
                   <button type="button" id="btn-cancelar-modal-rol" class="btn btn-secundario">Cancelar</button>
@@ -390,19 +416,28 @@
                 <input type="hidden" id="empleado-id">
 
                 <div style="margin-bottom: 1rem;">
-                  <label for="empleado-nombre" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre Completo / Referencia</label>
-                  <input type="text" id="empleado-nombre" required placeholder="Ej: Juan Pérez (Turno Mañana)" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                  <label for="empleado-nombre"
+                    style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre
+                    Completo / Referencia</label>
+                  <input type="text" id="empleado-nombre" required placeholder="Ej: Juan Pérez (Turno Mañana)"
+                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                 </div>
 
                 <div style="margin-bottom: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
                   <div>
-                    <label for="empleado-rol" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Rol Asignado</label>
-                    <select id="empleado-rol" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);"></select>
+                    <label for="empleado-rol"
+                      style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Rol
+                      Asignado</label>
+                    <select id="empleado-rol" required
+                      style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);"></select>
                   </div>
 
                   <div>
-                    <label for="empleado-contrato" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Tipo de Contrato</label>
-                    <select id="empleado-contrato" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                    <label for="empleado-contrato"
+                      style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Tipo de
+                      Contrato</label>
+                    <select id="empleado-contrato" required
+                      style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                       <option value="Jornada Completa">Jornada Completa (8 hs)</option>
                       <option value="Jornada Parcial">Jornada Parcial (4 hs)</option>
                       <option value="Horario Flexible">Horario Flexible / Refuerzo</option>
@@ -410,25 +445,22 @@
                   </div>
                 </div>
 
-                <div id="empleado-sueldo-preview" style="margin-bottom: 1rem; background-color: var(--color-primario-suave); padding: 0.75rem; border-radius: var(--radio-borde); border: 1px solid var(--color-borde);">
+                <div id="empleado-sueldo-preview"
+                  style="margin-bottom: 1rem; background-color: var(--color-primario-suave); padding: 0.75rem; border-radius: var(--radio-borde); border: 1px solid var(--color-borde);">
                   <!-- Se llena dinámicamente -->
                 </div>
 
-                <div style="margin-bottom: 1rem; background-color: var(--color-fondo-pagina); padding: 0.75rem; border-radius: var(--radio-borde);">
-                  <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">Configuración de Turno / Horario</label>
-                  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;">
-                    <div>
-                      <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">Turno</span>
-                      <input type="text" id="empleado-turno-nombre" value="Mañana" style="width: 100%; padding: 0.35rem; font-size: 0.85rem; border: 1px solid var(--color-borde); border-radius: 4px;">
-                    </div>
-                    <div>
-                      <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">Entrada</span>
-                      <select id="empleado-turno-inicio" style="width: 100%; padding: 0.35rem; font-size: 0.85rem; border: 1px solid var(--color-borde); border-radius: 4px; font-weight: 600;"></select>
-                    </div>
-                    <div>
-                      <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">Salida</span>
-                      <select id="empleado-turno-fin" style="width: 100%; padding: 0.35rem; font-size: 0.85rem; border: 1px solid var(--color-borde); border-radius: 4px; font-weight: 600;"></select>
-                    </div>
+                <div
+                  style="margin-bottom: 1rem; background-color: var(--color-fondo-pagina); padding: 0.75rem; border-radius: var(--radio-borde); border: 1px solid var(--color-borde);">
+                  <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; gap: 0.5rem; flex-wrap: wrap;">
+                    <label style="font-size: 0.85rem; font-weight: 700;">Días y Horarios de Cobertura Semanal</label>
+                    <button type="button" id="btn-copiar-horario-empleado" class="btn btn-secundario"
+                      style="font-size: 0.75rem; padding: 0.2rem 0.5rem;">⚡ Replicar primer horario</button>
+                  </div>
+                  <div id="contenedor-horarios-empleado-dias"
+                    style="display: flex; flex-direction: column; gap: 0.4rem; max-height: 240px; overflow-y: auto; padding-right: 4px;">
+                    <!-- Generado dinámicamente en personal.js -->
                   </div>
                 </div>
 
@@ -471,7 +503,8 @@
           <div class="tarjeta" style="margin-bottom: 1.5rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
               <h3>Categorías de Productos & % Marcación</h3>
-              <button id="btn-nueva-categoria" class="btn btn-secundario" style="padding: 0.35rem 0.75rem; font-size: 0.85rem;">
+              <button id="btn-nueva-categoria" class="btn btn-secundario"
+                style="padding: 0.35rem 0.75rem; font-size: 0.85rem;">
                 ➕ Nueva Categoría
               </button>
             </div>
@@ -495,7 +528,8 @@
                     <th style="padding: 0.75rem 1rem;">Categoría</th>
                     <th style="padding: 0.75rem 1rem;">Uds/Bulto</th>
                     <th style="padding: 0.75rem 1rem;">Costo Bulto</th>
-                    <th style="padding: 0.75rem 1rem;">Marcación</th>
+                    <th style="padding: 0.75rem 1rem;">% Marcación</th>
+                    <th style="padding: 0.75rem 1rem;">% Ganancia</th>
                     <th style="padding: 0.75rem 1rem;">Venta Bulto</th>
                     <th style="padding: 0.75rem 1rem;">Unitario (Costo → Venta)</th>
                     <th style="padding: 0.75rem 1rem; text-align: center;">Acciones</th>
@@ -516,17 +550,26 @@
               <form id="form-categoria">
                 <input type="hidden" id="categoria-id">
                 <div style="margin-bottom: 1rem;">
-                  <label for="categoria-nombre" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre de la Categoría</label>
-                  <input type="text" id="categoria-nombre" required placeholder="Ej: Panificados, Rotisería, Bebidas..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                  <label for="categoria-nombre"
+                    style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre de la
+                    Categoría</label>
+                  <input type="text" id="categoria-nombre" required placeholder="Ej: Panificados, Rotisería, Bebidas..."
+                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                 </div>
                 <div style="margin-bottom: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
                   <div>
-                    <label for="categoria-marcacion" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">% Marcación por Defecto</label>
-                    <input type="number" id="categoria-marcacion" required min="0" max="500" step="5" value="40" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                    <label for="categoria-marcacion"
+                      style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">% Marcación
+                      por Defecto</label>
+                    <input type="number" id="categoria-marcacion" required min="0" max="500" step="5" value="40"
+                      style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                   </div>
                   <div>
-                    <label for="categoria-frecuencia" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Frecuencia de Venta Típica</label>
-                    <select id="categoria-frecuencia" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                    <label for="categoria-frecuencia"
+                      style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Frecuencia
+                      de Venta Típica</label>
+                    <select id="categoria-frecuencia" required
+                      style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                       <option value="Diaria">Diaria</option>
                       <option value="Semanal">Semanal</option>
                       <option value="Quincenal">Quincenal</option>
@@ -552,17 +595,25 @@
               <form id="form-producto">
                 <input type="hidden" id="producto-id">
                 <div style="margin-bottom: 1rem;">
-                  <label for="producto-nombre" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del Producto</label>
-                  <input type="text" id="producto-nombre" required placeholder="Ej: 1 Lata Facturas (36 unidades)" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                  <label for="producto-nombre"
+                    style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del
+                    Producto</label>
+                  <input type="text" id="producto-nombre" required placeholder="Ej: 1 Lata Facturas (36 unidades)"
+                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                 </div>
                 <div style="margin-bottom: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
                   <div>
-                    <label for="producto-categoria" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Categoría</label>
-                    <select id="producto-categoria" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);"></select>
+                    <label for="producto-categoria"
+                      style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Categoría</label>
+                    <select id="producto-categoria" required
+                      style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);"></select>
                   </div>
                   <div>
-                    <label for="producto-frecuencia" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Frecuencia Venta</label>
-                    <select id="producto-frecuencia" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                    <label for="producto-frecuencia"
+                      style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Frecuencia
+                      Venta</label>
+                    <select id="producto-frecuencia" required
+                      style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                       <option value="Diaria">Diaria</option>
                       <option value="Semanal">Semanal</option>
                       <option value="Quincenal">Quincenal</option>
@@ -572,24 +623,38 @@
                 </div>
                 <div style="margin-bottom: 1rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem;">
                   <div>
-                    <label for="producto-costo-bulto" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Costo Bulto/Paquete ($)</label>
-                    <input type="number" id="producto-costo-bulto" required min="0" step="100" placeholder="45000" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                    <label for="producto-costo-bulto"
+                      style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Costo
+                      Bulto/Paquete ($)</label>
+                    <input type="number" id="producto-costo-bulto" required min="0" step="0.01" placeholder="45000"
+                      style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                   </div>
                   <div>
-                    <label for="producto-unidades-bulto" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Unidades por Bulto</label>
-                    <input type="number" id="producto-unidades-bulto" required min="1" step="1" value="1" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                    <label for="producto-unidades-bulto"
+                      style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Unidades por
+                      Bulto</label>
+                    <input type="number" id="producto-unidades-bulto" required min="1" step="1" value="1"
+                      style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                   </div>
                   <div>
-                    <label for="producto-marcacion" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">% Marcación</label>
-                    <input type="number" id="producto-marcacion" required min="0" max="500" step="5" value="40" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                    <label for="producto-marcacion"
+                      style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">%
+                      Marcación</label>
+                    <input type="number" id="producto-marcacion" required min="0" max="500" step="5" value="40"
+                      style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                   </div>
                 </div>
-                <div style="margin-bottom: 1rem; background-color: var(--color-fondo-pagina); padding: 0.75rem; border-radius: var(--radio-borde); font-size: 0.85rem;" id="producto-preview-precios">
+                <div
+                  style="margin-bottom: 1rem; background-color: var(--color-fondo-pagina); padding: 0.75rem; border-radius: var(--radio-borde); font-size: 0.85rem;"
+                  id="producto-preview-precios">
                   <span>Completá costo y marcación para ver precios calculados</span>
                 </div>
                 <div style="margin-bottom: 1rem;">
-                  <label for="producto-cantidad-simulada" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Cantidad Simulada Inicial (para el Simulador)</label>
-                  <input type="number" id="producto-cantidad-simulada" min="0" step="1" value="10" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                  <label for="producto-cantidad-simulada"
+                    style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Cantidad
+                    Simulada Inicial (para el Simulador)</label>
+                  <input type="number" id="producto-cantidad-simulada" min="0" step="1" value="10"
+                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
                   <button type="button" id="btn-cancelar-modal-producto" class="btn btn-secundario">Cancelar</button>
@@ -604,35 +669,53 @@
         <article id="modulo-simulador" class="modulo-seccion">
           <div class="modulo-header">
             <h2>Simulador de Ventas & Semáforo de Equilibrio</h2>
-            <p>Proyecta volúmenes de venta por producto, mensualización automática y evalúa la sustentabilidad con el semáforo comercial.</p>
+            <p>Proyecta volúmenes de venta por producto, mensualización automática y evalúa la sustentabilidad con el
+              semáforo comercial.</p>
           </div>
 
           <!-- Semáforo Comercial de Sustentabilidad (5 Franjas) -->
-          <div id="simulador-semaforo-contenedor" class="tarjeta" style="margin-bottom: 1.5rem; border-left: 6px solid var(--color-semaforo-rojo);">
-            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+          <div id="simulador-semaforo-contenedor" class="tarjeta"
+            style="margin-bottom: 1.5rem; border-left: 6px solid var(--color-semaforo-rojo);">
+            <div
+              style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
               <div>
-                <span id="simulador-semaforo-badge" style="background-color: var(--color-semaforo-rojo-suave); color: var(--color-semaforo-rojo); font-weight: 800; font-size: 0.85rem; padding: 0.3rem 0.75rem; border-radius: 20px; text-transform: uppercase;">🔴 Pérdida Crítica</span>
-                <h3 id="simulador-semaforo-titulo" style="margin-top: 0.5rem; margin-bottom: 0.25rem;">El negocio opera con pérdida proyectada</h3>
-                <p id="simulador-semaforo-descripcion" style="font-size: 0.85rem; color: var(--color-texto-secundario); margin: 0;">Las ventas simuladas no alcanzan a cubrir la totalidad de los costos fijos y sueldos del local.</p>
+                <span id="simulador-semaforo-badge"
+                  style="background-color: var(--color-semaforo-rojo-suave); color: var(--color-semaforo-rojo); font-weight: 800; font-size: 0.85rem; padding: 0.3rem 0.75rem; border-radius: 20px; text-transform: uppercase;">🔴
+                  Pérdida Crítica</span>
+                <h3 id="simulador-semaforo-titulo" style="margin-top: 0.5rem; margin-bottom: 0.25rem;">El negocio opera
+                  con pérdida proyectada</h3>
+                <p id="simulador-semaforo-descripcion"
+                  style="font-size: 0.85rem; color: var(--color-texto-secundario); margin: 0;">Las ventas simuladas no
+                  alcanzan a cubrir la totalidad de los costos fijos y sueldos del local.</p>
               </div>
               <div style="text-align: right; min-width: 200px;">
-                <span style="font-size: 0.75rem; color: var(--color-texto-secundario); display: block;">Monto Faltante para Equilibrio:</span>
-                <span id="simulador-monto-faltante" style="font-size: 1.4rem; font-weight: 800; color: var(--color-semaforo-rojo);">$ 0</span>
+                <span style="font-size: 0.75rem; color: var(--color-texto-secundario); display: block;">Monto Faltante
+                  para Equilibrio:</span>
+                <span id="simulador-monto-faltante"
+                  style="font-size: 1.4rem; font-weight: 800; color: var(--color-semaforo-rojo);">$ 0</span>
               </div>
             </div>
 
             <!-- Indicador Visual de 5 Franjas -->
-            <div style="display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 1.25rem; background-color: var(--color-borde);">
-              <div id="bar-franja-1" style="flex: 1; background-color: var(--color-semaforo-rojo); opacity: 0.3;" title="Pérdida Crítica"></div>
-              <div id="bar-franja-2" style="flex: 1; background-color: var(--color-semaforo-naranja); opacity: 0.3;" title="Equilibrio Justo (0-10%)"></div>
-              <div id="bar-franja-3" style="flex: 1; background-color: var(--color-semaforo-amarillo); opacity: 0.3;" title="Aceptable (10-25%)"></div>
-              <div id="bar-franja-4" style="flex: 1; background-color: var(--color-semaforo-verde-claro); opacity: 0.3;" title="Saludable (25-50%)"></div>
-              <div id="bar-franja-5" style="flex: 1; background-color: var(--color-semaforo-verde-oscuro); opacity: 0.3;" title="Alta Eficiencia (>50%)"></div>
+            <div
+              style="display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 1.25rem; background-color: var(--color-borde);">
+              <div id="bar-franja-1" style="flex: 1; background-color: var(--color-semaforo-rojo); opacity: 0.3;"
+                title="Pérdida Crítica"></div>
+              <div id="bar-franja-2" style="flex: 1; background-color: var(--color-semaforo-naranja); opacity: 0.3;"
+                title="Equilibrio Justo (0-10%)"></div>
+              <div id="bar-franja-3" style="flex: 1; background-color: var(--color-semaforo-amarillo); opacity: 0.3;"
+                title="Aceptable (10-25%)"></div>
+              <div id="bar-franja-4" style="flex: 1; background-color: var(--color-semaforo-verde-claro); opacity: 0.3;"
+                title="Saludable (25-50%)"></div>
+              <div id="bar-franja-5"
+                style="flex: 1; background-color: var(--color-semaforo-verde-oscuro); opacity: 0.3;"
+                title="Alta Eficiencia (>50%)"></div>
             </div>
           </div>
 
           <!-- Grilla de KPIs Financieros del Simulador -->
-          <div class="grilla-kpis" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 1.5rem;">
+          <div class="grilla-kpis"
+            style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 1.5rem;">
             <div class="tarjeta-kpi">
               <span class="kpi-titulo">Facturación Proyectada</span>
               <span id="sim-facturacion-total" class="kpi-valor">$ 0</span>
@@ -651,7 +734,7 @@
             <div class="tarjeta-kpi">
               <span class="kpi-titulo">Costos Fijos Totales</span>
               <span id="sim-costos-fijos-totales" class="kpi-valor">$ 0</span>
-              <span class="kpi-subtexto">Gastos Fijos + Sueldos</span>
+              <span id="sim-costos-fijos-desglose" class="kpi-subtexto">Gastos Fijos + Sueldos</span>
             </div>
             <div class="tarjeta-kpi">
               <span class="kpi-titulo">Resultado Neto Mensual</span>
@@ -660,18 +743,26 @@
             </div>
           </div>
 
+          <!-- Nuevo contenedor para Análisis de Horarios -->
+          <div id="sim-analisis-horarios" style="background-color: var(--color-fondo-pagina); border: 1px solid var(--color-borde); border-left: 4px solid var(--color-primario); padding: 1rem; border-radius: var(--radio-borde); margin-bottom: 1.5rem; display: none;">
+          </div>
+
           <!-- Selector de Escenarios de Simulación -->
-          <div class="tarjeta" style="margin-bottom: 1.5rem; background: linear-gradient(to right, var(--color-fondo-tarjeta), var(--color-fondo-pagina));">
-            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+          <div class="tarjeta"
+            style="margin-bottom: 1.5rem; background: linear-gradient(to right, var(--color-fondo-tarjeta), var(--color-fondo-pagina));">
+            <div
+              style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
               <div>
                 <h3 style="margin-bottom: 0.25rem;">Escenarios de Simulación Financiera</h3>
-                <p style="font-size: 0.85rem; color: var(--color-texto-secundario); margin: 0;">Analiza la resistencia del negocio ante variaciones en el volumen de ventas.</p>
+                <p style="font-size: 0.85rem; color: var(--color-texto-secundario); margin: 0;">Analiza la resistencia
+                  del negocio ante variaciones en el volumen de ventas.</p>
               </div>
               <div style="display: flex; gap: 0.5rem;">
                 <button class="btn btn-secundario btn-escenario" data-escenario="pesimista" style="font-size: 0.85rem;">
                   📉 Pesimista (-20%)
                 </button>
-                <button class="btn btn-primario btn-escenario activo" data-escenario="moderado" style="font-size: 0.85rem;">
+                <button class="btn btn-primario btn-escenario activo" data-escenario="moderado"
+                  style="font-size: 0.85rem;">
                   📊 Moderado (Base)
                 </button>
                 <button class="btn btn-secundario btn-escenario" data-escenario="optimista" style="font-size: 0.85rem;">
@@ -681,51 +772,75 @@
             </div>
 
             <!-- Comparativo de 3 Escenarios Lado a Lado -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1.25rem;">
-              <div id="card-escenario-pesimista" style="background-color: var(--color-fondo-pagina); padding: 0.85rem; border-radius: 8px; border: 1px solid var(--color-borde);">
-                <div style="font-size: 0.8rem; font-weight: 700; color: var(--color-semaforo-rojo);">Escenario Pesimista (-20%)</div>
-                <div id="esc-pesimista-facturacion" style="font-size: 1.1rem; font-weight: 800; margin-top: 0.3rem;">$ 0</div>
-                <div id="esc-pesimista-resultado" style="font-size: 0.85rem; font-weight: 700; margin-top: 0.2rem;">Neto: $ 0</div>
+            <div
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1.25rem;">
+              <div id="card-escenario-pesimista"
+                style="background-color: var(--color-fondo-pagina); padding: 0.85rem; border-radius: 8px; border: 1px solid var(--color-borde);">
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--color-semaforo-rojo);">Escenario Pesimista
+                  (-20%)</div>
+                <div id="esc-pesimista-facturacion" style="font-size: 1.1rem; font-weight: 800; margin-top: 0.3rem;">$ 0
+                </div>
+                <div id="esc-pesimista-resultado" style="font-size: 0.85rem; font-weight: 700; margin-top: 0.2rem;">
+                  Neto: $ 0</div>
               </div>
-              <div id="card-escenario-moderado" style="background-color: var(--color-primario-suave); padding: 0.85rem; border-radius: 8px; border: 2px solid var(--color-primario);">
-                <div style="font-size: 0.8rem; font-weight: 700; color: var(--color-primario);">Escenario Moderado (Base)</div>
-                <div id="esc-moderado-facturacion" style="font-size: 1.1rem; font-weight: 800; margin-top: 0.3rem;">$ 0</div>
-                <div id="esc-moderado-resultado" style="font-size: 0.85rem; font-weight: 700; margin-top: 0.2rem;">Neto: $ 0</div>
+              <div id="card-escenario-moderado"
+                style="background-color: var(--color-primario-suave); padding: 0.85rem; border-radius: 8px; border: 2px solid var(--color-primario);">
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--color-primario);">Escenario Moderado
+                  (Base)</div>
+                <div id="esc-moderado-facturacion" style="font-size: 1.1rem; font-weight: 800; margin-top: 0.3rem;">$ 0
+                </div>
+                <div id="esc-moderado-resultado" style="font-size: 0.85rem; font-weight: 700; margin-top: 0.2rem;">Neto:
+                  $ 0</div>
               </div>
-              <div id="card-escenario-optimista" style="background-color: var(--color-fondo-pagina); padding: 0.85rem; border-radius: 8px; border: 1px solid var(--color-borde);">
-                <div style="font-size: 0.8rem; font-weight: 700; color: var(--color-semaforo-verde-oscuro);">Escenario Optimista (+25%)</div>
-                <div id="esc-optimista-facturacion" style="font-size: 1.1rem; font-weight: 800; margin-top: 0.3rem;">$ 0</div>
-                <div id="esc-optimista-resultado" style="font-size: 0.85rem; font-weight: 700; margin-top: 0.2rem;">Neto: $ 0</div>
+              <div id="card-escenario-optimista"
+                style="background-color: var(--color-fondo-pagina); padding: 0.85rem; border-radius: 8px; border: 1px solid var(--color-borde);">
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--color-semaforo-verde-oscuro);">Escenario
+                  Optimista (+25%)</div>
+                <div id="esc-optimista-facturacion" style="font-size: 1.1rem; font-weight: 800; margin-top: 0.3rem;">$ 0
+                </div>
+                <div id="esc-optimista-resultado" style="font-size: 0.85rem; font-weight: 700; margin-top: 0.2rem;">
+                  Neto: $ 0</div>
               </div>
             </div>
           </div>
 
           <!-- Métricas de Días Operativos y Cobertura de Costos Fijos -->
           <div class="tarjeta" style="margin-bottom: 1.5rem; background-color: var(--color-fondo-pagina);">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; align-items: center;">
+            <div
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; align-items: center;">
               <div>
-                <span style="font-size: 0.8rem; color: var(--color-texto-secundario);">Facturación Mínima Diaria Requerida:</span>
-                <div id="sim-facturacion-diaria-requerida" style="font-size: 1.1rem; font-weight: 700; color: var(--color-texto-principal);">$ 0 / día</div>
+                <span style="font-size: 0.8rem; color: var(--color-texto-secundario);">Facturación Mínima Diaria
+                  Requerida:</span>
+                <div id="sim-facturacion-diaria-requerida"
+                  style="font-size: 1.1rem; font-weight: 700; color: var(--color-texto-principal);">$ 0 / día</div>
               </div>
               <div>
-                <span style="font-size: 0.8rem; color: var(--color-texto-secundario);">Días de Trabajo para Pagar Costos Fijos:</span>
-                <div id="sim-dias-para-equilibrio" style="font-size: 1.1rem; font-weight: 700; color: var(--color-primario);">0 días del mes</div>
+                <span style="font-size: 0.8rem; color: var(--color-texto-secundario);">Días de Trabajo para Pagar Costos
+                  Fijos:</span>
+                <div id="sim-dias-para-equilibrio"
+                  style="font-size: 1.1rem; font-weight: 700; color: var(--color-primario);">0 días del mes</div>
               </div>
               <div>
-                <span style="font-size: 0.8rem; color: var(--color-texto-secundario);">Punto de Equilibrio en Unidades/Ventas:</span>
-                <div id="sim-porcentaje-equilibrio" style="font-size: 1.1rem; font-weight: 700; color: var(--color-texto-principal);">0% del volumen simulado</div>
+                <span style="font-size: 0.8rem; color: var(--color-texto-secundario);">Punto de Equilibrio en
+                  Unidades/Ventas:</span>
+                <div id="sim-porcentaje-equilibrio"
+                  style="font-size: 1.1rem; font-weight: 700; color: var(--color-texto-principal);">0% del volumen
+                  simulado</div>
               </div>
             </div>
           </div>
 
           <!-- Tabla de Simulación de Cantidades por Producto -->
           <div class="tarjeta">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
               <div>
                 <h3>Simulación de Cantidades por Producto</h3>
-                <p style="font-size: 0.85rem; color: var(--color-texto-secundario); margin: 0;">Ingresa la cantidad a vender según la frecuencia de cada producto para calcular el volumen mensual.</p>
+                <p style="font-size: 0.85rem; color: var(--color-texto-secundario); margin: 0;">Ingresa la cantidad a
+                  vender según la frecuencia de cada producto para calcular el volumen mensual.</p>
               </div>
-              <button id="btn-restablecer-cantidades" class="btn btn-secundario" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;">
+              <button id="btn-restablecer-cantidades" class="btn btn-secundario"
+                style="font-size: 0.85rem; padding: 0.35rem 0.75rem;">
                 🔄 Restablecer Cantidades
               </button>
             </div>
@@ -734,11 +849,14 @@
               <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
                 <thead>
                   <tr style="background-color: var(--color-fondo-pagina); border-bottom: 1px solid var(--color-borde);">
+                    <th style="padding: 0.6rem 0.8rem; width: 40px; text-align: center;">✅</th>
                     <th style="padding: 0.6rem 0.8rem;">Producto</th>
                     <th style="padding: 0.6rem 0.8rem;">Frecuencia</th>
+                    <th style="padding: 0.6rem 0.8rem;">Uds/Bulto</th>
                     <th style="padding: 0.6rem 0.8rem;">Costo Bulto</th>
                     <th style="padding: 0.6rem 0.8rem;">Precio Venta</th>
-                    <th style="padding: 0.6rem 0.8rem;">Marcación</th>
+                    <th style="padding: 0.6rem 0.8rem;">% Marcación</th>
+                    <th style="padding: 0.6rem 0.8rem;">% Ganancia</th>
                     <th style="padding: 0.6rem 0.8rem; width: 140px;">Cant. Simulada</th>
                     <th style="padding: 0.6rem 0.8rem;">Vol. Mensual</th>
                     <th style="padding: 0.6rem 0.8rem;">Venta Mensual ($)</th>
@@ -750,50 +868,66 @@
                 </tbody>
               </table>
             </div>
-          <!-- Sección de Proyecciones Temporales (Diario, Semanal, Mensual) -->
-          <div class="tarjeta" style="margin-top: 1.5rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-              <div>
-                <h3>Proyección de Ventas por Período</h3>
-                <p style="font-size: 0.85rem; color: var(--color-texto-secundario); margin: 0;">Desglose de métricas operativas y margen estimado según frecuencia temporal.</p>
+            <!-- Sección de Proyecciones Temporales (Diario, Semanal, Mensual) -->
+            <div class="tarjeta" style="margin-top: 1.5rem;">
+              <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                <div>
+                  <h3>Proyección de Ventas por Período</h3>
+                  <p style="font-size: 0.85rem; color: var(--color-texto-secundario); margin: 0;">Desglose de métricas
+                    operativas y margen estimado según frecuencia temporal.</p>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                  <button class="btn btn-primario btn-tab-proyeccion activo" data-periodo="diaria"
+                    style="font-size: 0.85rem;">📅 Vista Diaria</button>
+                  <button class="btn btn-secundario btn-tab-proyeccion" data-periodo="semanal"
+                    style="font-size: 0.85rem;">🗓️ Vista Semanal</button>
+                  <button class="btn btn-secundario btn-tab-proyeccion" data-periodo="mensual"
+                    style="font-size: 0.85rem;">📊 Vista Mensual</button>
+                </div>
               </div>
-              <div style="display: flex; gap: 0.5rem;">
-                <button class="btn btn-primario btn-tab-proyeccion activo" data-periodo="diaria" style="font-size: 0.85rem;">📅 Vista Diaria</button>
-                <button class="btn btn-secundario btn-tab-proyeccion" data-periodo="semanal" style="font-size: 0.85rem;">🗓️ Vista Semanal</button>
-                <button class="btn btn-secundario btn-tab-proyeccion" data-periodo="mensual" style="font-size: 0.85rem;">📊 Vista Mensual</button>
-              </div>
-            </div>
 
-            <div id="contenedor-vista-proyeccion">
-              <!-- Se renderiza dinámicamente según la pestaña seleccionada -->
+              <div id="contenedor-vista-proyeccion">
+                <!-- Se renderiza dinámicamente según la pestaña seleccionada -->
+              </div>
             </div>
-          </div>
         </article>
 
         <!-- Módulo 4.5: Análisis Real & Comparación -->
         <article id="modulo-analisis-real" class="modulo-seccion">
           <div class="modulo-header">
             <h2>Análisis de Ventas Reales vs. Proyección Simulada</h2>
-            <p>Carga tu recaudación diaria real y evalúa variaciones contra la simulación para determinar si ganas o pierdes dinero.</p>
+            <p>Carga tu recaudación diaria real y evalúa variaciones contra la simulación para determinar si ganas o
+              pierdes dinero.</p>
           </div>
 
           <!-- Diagnóstico Interpretativo Automático -->
-          <div id="diagnostico-real-contenedor" class="tarjeta" style="margin-bottom: 1.5rem; border-left: 6px solid var(--color-primario);">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div id="diagnostico-real-contenedor" class="tarjeta"
+            style="margin-bottom: 1.5rem; border-left: 6px solid var(--color-primario);">
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
               <div>
-                <span id="diagnostico-real-badge" style="background-color: var(--color-primario-suave); color: var(--color-primario); font-weight: 800; font-size: 0.85rem; padding: 0.3rem 0.75rem; border-radius: 20px; text-transform: uppercase;">📊 Análisis Operativo</span>
-                <h3 id="diagnostico-real-titulo" style="margin-top: 0.5rem; margin-bottom: 0.25rem;">Diagnóstico de Rendimiento Comercial</h3>
-                <p id="diagnostico-real-descripcion" style="font-size: 0.85rem; color: var(--color-texto-secundario); margin: 0;">Comparación basada en los datos cargados.</p>
+                <span id="diagnostico-real-badge"
+                  style="background-color: var(--color-primario-suave); color: var(--color-primario); font-weight: 800; font-size: 0.85rem; padding: 0.3rem 0.75rem; border-radius: 20px; text-transform: uppercase;">📊
+                  Análisis Operativo</span>
+                <h3 id="diagnostico-real-titulo" style="margin-top: 0.5rem; margin-bottom: 0.25rem;">Diagnóstico de
+                  Rendimiento Comercial</h3>
+                <p id="diagnostico-real-descripcion"
+                  style="font-size: 0.85rem; color: var(--color-texto-secundario); margin: 0;">Comparación basada en los
+                  datos cargados.</p>
               </div>
               <div style="text-align: right;">
-                <span style="font-size: 0.75rem; color: var(--color-texto-secundario); display: block;">Promedio Diario Real:</span>
-                <span id="diagnostico-promedio-real" style="font-size: 1.4rem; font-weight: 800; color: var(--color-texto-principal);">$ 0 / día</span>
+                <span style="font-size: 0.75rem; color: var(--color-texto-secundario); display: block;">Promedio Diario
+                  Real:</span>
+                <span id="diagnostico-promedio-real"
+                  style="font-size: 1.4rem; font-weight: 800; color: var(--color-texto-principal);">$ 0 / día</span>
               </div>
             </div>
           </div>
 
           <!-- KPIs Comparativos Simulado vs Real -->
-          <div class="grilla-kpis" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 1.5rem;">
+          <div class="grilla-kpis"
+            style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 1.5rem;">
             <div class="tarjeta-kpi">
               <span class="kpi-titulo">Facturado Real Acumulado</span>
               <span id="real-facturado-acumulado" class="kpi-valor">$ 0</span>
@@ -817,23 +951,32 @@
           </div>
 
           <!-- Formulario de Carga y Tabla de Registros Reales -->
-          <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; margin-bottom: 1.5rem; align-items: start;">
+          <div
+            style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; margin-bottom: 1.5rem; align-items: start;">
             <!-- Formulario Carga -->
             <div class="tarjeta">
               <h3 style="margin-bottom: 1rem;">Cargar Facturación Diaria</h3>
               <form id="form-registro-real">
                 <input type="hidden" id="real-registro-id">
                 <div style="margin-bottom: 1rem;">
-                  <label for="real-fecha" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Fecha</label>
-                  <input type="date" id="real-fecha" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                  <label for="real-fecha"
+                    style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Fecha</label>
+                  <input type="date" id="real-fecha" required
+                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                 </div>
                 <div style="margin-bottom: 1rem;">
-                  <label for="real-monto" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Monto Total Facturado ($)</label>
-                  <input type="number" id="real-monto" required min="0" step="1000" placeholder="Ej: 480000" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                  <label for="real-monto"
+                    style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Monto Total
+                    Facturado ($)</label>
+                  <input type="number" id="real-monto" required min="0" step="1000" placeholder="Ej: 480000"
+                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                 </div>
                 <div style="margin-bottom: 1rem;">
-                  <label for="real-notas" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Notas / Observaciones</label>
-                  <input type="text" id="real-notas" placeholder="Ej: Día nublado, evento en la zona..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                  <label for="real-notas"
+                    style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Notas /
+                    Observaciones</label>
+                  <input type="text" id="real-notas" placeholder="Ej: Día nublado, evento en la zona..."
+                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                 </div>
                 <button type="submit" class="btn btn-primario" style="width: 100%;">💾 Guardar Facturación</button>
               </form>
@@ -843,12 +986,14 @@
             <div class="tarjeta">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                 <h3>Registros de Ventas Reales</h3>
-                <span id="contador-registros-reales" style="font-size: 0.8rem; color: var(--color-texto-secundario);">0 registros</span>
+                <span id="contador-registros-reales" style="font-size: 0.8rem; color: var(--color-texto-secundario);">0
+                  registros</span>
               </div>
               <div style="overflow-x: auto; max-height: 320px;">
                 <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
                   <thead>
-                    <tr style="background-color: var(--color-fondo-pagina); border-bottom: 1px solid var(--color-borde);">
+                    <tr
+                      style="background-color: var(--color-fondo-pagina); border-bottom: 1px solid var(--color-borde);">
                       <th style="padding: 0.6rem 0.8rem;">Fecha</th>
                       <th style="padding: 0.6rem 0.8rem;">Facturado Real</th>
                       <th style="padding: 0.6rem 0.8rem;">vs. Objetivo Diario</th>
@@ -869,11 +1014,13 @@
         <article id="modulo-caja" class="modulo-seccion">
           <div class="modulo-header">
             <h2>Recaudación Diaria & Control de Caja Chica</h2>
-            <p>Registra las entradas por canal de venta (Efectivo, Bancos, Apps) y controla los pagos salidos de la caja diaria.</p>
+            <p>Registra las entradas por canal de venta (Efectivo, Bancos, Apps) y controla los pagos salidos de la caja
+              diaria.</p>
           </div>
 
           <!-- Resumen de Caja y Saldos -->
-          <div class="grilla-kpis" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 1.5rem;">
+          <div class="grilla-kpis"
+            style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 1.5rem;">
             <div class="tarjeta-kpi">
               <span class="kpi-titulo">Total Recaudado del Día</span>
               <span id="caja-total-recaudado-dia" class="kpi-valor">$ 0</span>
@@ -898,42 +1045,63 @@
 
           <!-- Carga Diaria de Recaudación -->
           <div class="tarjeta" style="margin-bottom: 1.5rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
               <div>
                 <h3>Cargar / Modificar Recaudación Diaria</h3>
-                <p style="font-size: 0.85rem; color: var(--color-texto-secundario); margin: 0;">Seleccioná la fecha e ingresá los ingresos por cada medio de cobro.</p>
+                <p style="font-size: 0.85rem; color: var(--color-texto-secundario); margin: 0;">Seleccioná la fecha e
+                  ingresá los ingresos por cada medio de cobro.</p>
               </div>
               <div style="display: flex; gap: 0.5rem; align-items: center;">
                 <label for="caja-filtro-mes-ano" style="font-size: 0.85rem; font-weight: 600;">Período:</label>
-                <input type="month" id="caja-filtro-mes-ano" style="padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde); font-size: 0.85rem;">
+                <input type="month" id="caja-filtro-mes-ano"
+                  style="padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde); font-size: 0.85rem;">
               </div>
             </div>
 
-            <form id="form-caja-diaria" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; background: var(--color-fondo-pagina); padding: 1rem; border-radius: var(--radio-borde); border: 1px solid var(--color-borde);">
+            <form id="form-caja-diaria"
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; background: var(--color-fondo-pagina); padding: 1rem; border-radius: var(--radio-borde); border: 1px solid var(--color-borde);">
               <div>
-                <label for="caja-fecha" style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem;">Fecha</label>
-                <input type="date" id="caja-fecha" required style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                <label for="caja-fecha"
+                  style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem;">Fecha</label>
+                <input type="date" id="caja-fecha" required
+                  style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
               </div>
               <div>
-                <label for="caja-in-efectivo" style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--color-semaforo-verde-oscuro); margin-bottom: 0.25rem;">💵 Efectivo ($)</label>
-                <input type="number" id="caja-in-efectivo" min="0" step="100" value="0" style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                <label for="caja-in-efectivo"
+                  style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--color-semaforo-verde-oscuro); margin-bottom: 0.25rem;">💵
+                  Efectivo ($)</label>
+                <input type="number" id="caja-in-efectivo" min="0" step="100" value="0"
+                  style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
               </div>
-              <div style="grid-column: 1 / -1; border: 1px dashed var(--color-primario); border-radius: var(--radio-borde); padding: 0.75rem; background: rgba(59,130,246,0.04);">
-                <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--color-primario); margin-bottom: 0.5rem;">🏦 Recaudación por Transferencia / Billeteras Digitales (Suma a la Cuenta)</label>
+              <div
+                style="grid-column: 1 / -1; border: 1px dashed var(--color-primario); border-radius: var(--radio-borde); padding: 0.75rem; background: rgba(59,130,246,0.04);">
+                <label
+                  style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--color-primario); margin-bottom: 0.5rem;">🏦
+                  Recaudación por Transferencia / Billeteras Digitales (Suma a la Cuenta)</label>
                 <div style="display: flex; gap: 0.5rem; align-items: flex-end; flex-wrap: wrap;">
                   <div style="flex: 1; min-width: 180px;">
-                    <label for="caja-transf-cuenta-select" style="display: block; font-size: 0.7rem; color: var(--color-texto-secundario); margin-bottom: 0.15rem;">Billetera / Cuenta de Destino</label>
-                    <select id="caja-transf-cuenta-select" style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px; font-size: 0.85rem;">
+                    <label for="caja-transf-cuenta-select"
+                      style="display: block; font-size: 0.7rem; color: var(--color-texto-secundario); margin-bottom: 0.15rem;">Billetera
+                      / Cuenta de Destino</label>
+                    <select id="caja-transf-cuenta-select"
+                      style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px; font-size: 0.85rem;">
                       <option value="">Seleccionar Billetera...</option>
                     </select>
                   </div>
                   <div style="min-width: 130px;">
-                    <label for="caja-transf-monto" style="display: block; font-size: 0.7rem; color: var(--color-texto-secundario); margin-bottom: 0.15rem;">Monto Recaudado ($)</label>
-                    <input type="number" id="caja-transf-monto" min="0" step="100" value="0" style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                    <label for="caja-transf-monto"
+                      style="display: block; font-size: 0.7rem; color: var(--color-texto-secundario); margin-bottom: 0.15rem;">Monto
+                      Recaudado ($)</label>
+                    <input type="number" id="caja-transf-monto" min="0" step="100" value="0"
+                      style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
                   </div>
-                  <button type="button" id="btn-agregar-transf-cuenta" class="btn btn-secundario" style="padding: 0.4rem 0.7rem; font-size: 0.8rem; white-space: nowrap; color: var(--color-primario); border-color: var(--color-primario);">＋ Agregar Ingreso</button>
+                  <button type="button" id="btn-agregar-transf-cuenta" class="btn btn-secundario"
+                    style="padding: 0.4rem 0.7rem; font-size: 0.8rem; white-space: nowrap; color: var(--color-primario); border-color: var(--color-primario);">＋
+                    Agregar Ingreso</button>
                 </div>
-                <ul id="caja-transf-lista-ingresos" style="list-style: none; padding: 0; margin: 0.5rem 0 0 0; font-size: 0.8rem;"></ul>
+                <ul id="caja-transf-lista-ingresos"
+                  style="list-style: none; padding: 0; margin: 0.5rem 0 0 0; font-size: 0.8rem;"></ul>
                 <!-- Inputs ocultos compatibles -->
                 <input type="hidden" id="caja-in-transf" value="0">
                 <input type="hidden" id="caja-in-nx" value="0">
@@ -941,30 +1109,46 @@
                 <input type="hidden" id="caja-in-peya" value="0">
                 <input type="hidden" id="caja-in-rappi" value="0">
               </div>
-              <div style="grid-column: 1 / -1; border: 1px dashed #8b5cf6; border-radius: var(--radio-borde); padding: 0.75rem; background: rgba(139,92,246,0.04);">
-                <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #8b5cf6; margin-bottom: 0.5rem;">🤝 Cobranza Mayoristas (descuenta deuda)</label>
+              <div
+                style="grid-column: 1 / -1; border: 1px dashed #8b5cf6; border-radius: var(--radio-borde); padding: 0.75rem; background: rgba(139,92,246,0.04);">
+                <label
+                  style="display: block; font-size: 0.8rem; font-weight: 700; color: #8b5cf6; margin-bottom: 0.5rem;">🤝
+                  Cobranza Mayoristas (descuenta deuda)</label>
                 <div style="display: flex; gap: 0.5rem; align-items: flex-end; flex-wrap: wrap;">
                   <div style="flex: 1; min-width: 160px;">
-                    <label for="caja-may-select" style="display: block; font-size: 0.7rem; color: var(--color-texto-secundario); margin-bottom: 0.15rem;">Mayorista</label>
-                    <select id="caja-may-select" style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px; font-size: 0.85rem;">
+                    <label for="caja-may-select"
+                      style="display: block; font-size: 0.7rem; color: var(--color-texto-secundario); margin-bottom: 0.15rem;">Mayorista</label>
+                    <select id="caja-may-select"
+                      style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px; font-size: 0.85rem;">
                       <option value="">Seleccionar...</option>
                     </select>
                   </div>
                   <div style="min-width: 120px;">
-                    <label for="caja-may-monto" style="display: block; font-size: 0.7rem; color: var(--color-texto-secundario); margin-bottom: 0.15rem;">Monto Pago ($)</label>
-                    <input type="number" id="caja-may-monto" min="0" step="100" value="0" style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                    <label for="caja-may-monto"
+                      style="display: block; font-size: 0.7rem; color: var(--color-texto-secundario); margin-bottom: 0.15rem;">Monto
+                      Pago ($)</label>
+                    <input type="number" id="caja-may-monto" min="0" step="100" value="0"
+                      style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
                   </div>
-                  <button type="button" id="btn-agregar-pago-may" class="btn btn-secundario" style="padding: 0.4rem 0.7rem; font-size: 0.8rem; white-space: nowrap; color: #8b5cf6; border-color: #8b5cf6;">＋ Agregar</button>
+                  <button type="button" id="btn-agregar-pago-may" class="btn btn-secundario"
+                    style="padding: 0.4rem 0.7rem; font-size: 0.8rem; white-space: nowrap; color: #8b5cf6; border-color: #8b5cf6;">＋
+                    Agregar</button>
                 </div>
-                <div id="caja-may-deuda-info" style="font-size: 0.75rem; color: var(--color-texto-secundario); margin-top: 0.35rem;"></div>
-                <ul id="caja-may-lista-pagos" style="list-style: none; padding: 0; margin: 0.5rem 0 0 0; font-size: 0.8rem;"></ul>
+                <div id="caja-may-deuda-info"
+                  style="font-size: 0.75rem; color: var(--color-texto-secundario); margin-top: 0.35rem;"></div>
+                <ul id="caja-may-lista-pagos"
+                  style="list-style: none; padding: 0; margin: 0.5rem 0 0 0; font-size: 0.8rem;"></ul>
                 <input type="hidden" id="caja-in-may" value="0">
               </div>
               <div>
-                <label for="caja-in-retiros" style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--color-semaforo-rojo); margin-bottom: 0.25rem;">🔻 Retiros Socios ($)</label>
-                <input type="number" id="caja-in-retiros" min="0" step="100" value="0" style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                <label for="caja-in-retiros"
+                  style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--color-semaforo-rojo); margin-bottom: 0.25rem;">🔻
+                  Retiros Socios ($)</label>
+                <input type="number" id="caja-in-retiros" min="0" step="100" value="0"
+                  style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
               </div>
-              <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem;">
+              <div
+                style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem;">
                 <button type="submit" class="btn btn-primario">💾 Guardar Registro de Caja</button>
               </div>
             </form>
@@ -984,7 +1168,8 @@
                     <th style="padding: 0.6rem; color: var(--color-semaforo-rojo);">Pagos Prov. Caja</th>
                     <th style="padding: 0.6rem; color: var(--color-semaforo-rojo);">Retiros</th>
                     <th style="padding: 0.6rem; font-weight: 800;">Total Día</th>
-                    <th style="padding: 0.6rem; font-weight: 800; color: var(--color-semaforo-verde-oscuro);">Caja Final ($)</th>
+                    <th style="padding: 0.6rem; font-weight: 800; color: var(--color-semaforo-verde-oscuro);">Caja Final
+                      ($)</th>
                     <th style="padding: 0.6rem; text-align: center;">Acción</th>
                   </tr>
                 </thead>
@@ -998,7 +1183,8 @@
         <article id="modulo-proveedores" class="modulo-seccion">
           <div class="modulo-header">
             <h2>Gestión de Proveedores & Registro de Compras</h2>
-            <p>Registra las compras de mercadería asignando proveedor, origen del pago (Caja o Cuenta) y estado del pedido.</p>
+            <p>Registra las compras de mercadería asignando proveedor, origen del pago (Caja o Cuenta) y estado del
+              pedido.</p>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; align-items: start;">
@@ -1008,42 +1194,64 @@
               <form id="form-compra-proveedor" style="margin-top: 1rem;">
                 <input type="hidden" id="compra-id">
                 <div style="margin-bottom: 0.8rem;">
-                  <label for="compra-fecha" style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Fecha de Compra</label>
-                  <input type="date" id="compra-fecha" required style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                  <label for="compra-fecha"
+                    style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Fecha de
+                    Compra</label>
+                  <input type="date" id="compra-fecha" required
+                    style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
                 </div>
                 <div style="margin-bottom: 0.8rem;">
-                  <label for="compra-proveedor" style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Proveedor</label>
-                  <select id="compra-proveedor" required style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;"></select>
+                  <label for="compra-proveedor"
+                    style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Proveedor</label>
+                  <select id="compra-proveedor" required
+                    style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;"></select>
                 </div>
                 <div style="margin-bottom: 0.8rem;">
-                  <label for="compra-monto" style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Monto Total Compra ($)</label>
-                  <input type="number" id="compra-monto" required min="0" step="100" style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                  <label for="compra-monto"
+                    style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Monto Total
+                    Compra ($)</label>
+                  <input type="number" id="compra-monto" required min="0" step="100"
+                    style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
                 </div>
                 <div style="margin-bottom: 0.8rem;">
-                  <label for="compra-metodo" style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Origen del Pago</label>
-                  <select id="compra-metodo" required style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                  <label for="compra-metodo"
+                    style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Origen del
+                    Pago</label>
+                  <select id="compra-metodo" required
+                    style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
                     <option value="CAJA">Pagado desde CAJA (Resta efectivo del día)</option>
-                    <option value="CUENTA">Pagado desde CUENTA / Billetera (Descuenta de la cuenta seleccionada)</option>
+                    <option value="CUENTA">Pagado desde CUENTA / Billetera (Descuenta de la cuenta seleccionada)
+                    </option>
                     <option value="MIXTO">Pago Mixto (Caja + Cuenta)</option>
                   </select>
                 </div>
                 <div id="contenedor-compra-cuenta-select" style="display: none; margin-bottom: 0.8rem;">
-                  <label for="compra-cuenta-origen" style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Billetera / Cuenta de Origen</label>
-                  <select id="compra-cuenta-origen" style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;"></select>
+                  <label for="compra-cuenta-origen"
+                    style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Billetera /
+                    Cuenta de Origen</label>
+                  <select id="compra-cuenta-origen"
+                    style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;"></select>
                 </div>
-                <div id="contenedor-compra-mixto" style="display: none; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.8rem; background: var(--color-fondo-pagina); padding: 0.5rem; border-radius: 4px;">
+                <div id="contenedor-compra-mixto"
+                  style="display: none; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.8rem; background: var(--color-fondo-pagina); padding: 0.5rem; border-radius: 4px;">
                   <div>
                     <label for="compra-monto-caja" style="font-size: 0.75rem; font-weight: 600;">Monto Caja ($)</label>
-                    <input type="number" id="compra-monto-caja" min="0" step="100" value="0" style="width: 100%; padding: 0.3rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                    <input type="number" id="compra-monto-caja" min="0" step="100" value="0"
+                      style="width: 100%; padding: 0.3rem; border: 1px solid var(--color-borde); border-radius: 4px;">
                   </div>
                   <div>
-                    <label for="compra-monto-cuenta" style="font-size: 0.75rem; font-weight: 600;">Monto Cuenta ($)</label>
-                    <input type="number" id="compra-monto-cuenta" min="0" step="100" value="0" style="width: 100%; padding: 0.3rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                    <label for="compra-monto-cuenta" style="font-size: 0.75rem; font-weight: 600;">Monto Cuenta
+                      ($)</label>
+                    <input type="number" id="compra-monto-cuenta" min="0" step="100" value="0"
+                      style="width: 100%; padding: 0.3rem; border: 1px solid var(--color-borde); border-radius: 4px;">
                   </div>
                 </div>
                 <div style="margin-bottom: 1rem;">
-                  <label for="compra-estado" style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Estado del Pedido/Pago</label>
-                  <select id="compra-estado" required style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                  <label for="compra-estado"
+                    style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Estado del
+                    Pedido/Pago</label>
+                  <select id="compra-estado" required
+                    style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
                     <option value="PAGADO">Recibido y Pagado (Efectivizado)</option>
                     <option value="PEDIDO_PENDIENTE">Pedido Pendiente (Mercadería no entregada)</option>
                     <option value="PAGO_PENDIENTE">Pago Pendiente (Deuda con proveedor)</option>
@@ -1057,12 +1265,14 @@
             <div class="tarjeta">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                 <h3>Historial de Compras de Mercadería</h3>
-                <span id="contador-compras" style="font-size: 0.8rem; color: var(--color-texto-secundario);">0 compras</span>
+                <span id="contador-compras" style="font-size: 0.8rem; color: var(--color-texto-secundario);">0
+                  compras</span>
               </div>
               <div style="overflow-x: auto; max-height: 400px;">
                 <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
                   <thead>
-                    <tr style="background-color: var(--color-fondo-pagina); border-bottom: 1px solid var(--color-borde);">
+                    <tr
+                      style="background-color: var(--color-fondo-pagina); border-bottom: 1px solid var(--color-borde);">
                       <th style="padding: 0.6rem;">Fecha</th>
                       <th style="padding: 0.6rem;">Proveedor</th>
                       <th style="padding: 0.6rem;">Categoría</th>
@@ -1083,14 +1293,17 @@
         <article id="modulo-mayoristas" class="modulo-seccion">
           <div class="modulo-header">
             <h2>Padrón & Gestión de Clientes Mayoristas</h2>
-            <p>Administra tus clientes preferenciales, sus contactos de WhatsApp, ventas a cuenta corriente y deudas.</p>
+            <p>Administra tus clientes preferenciales, sus contactos de WhatsApp, ventas a cuenta corriente y deudas.
+            </p>
           </div>
 
           <!-- Tabla de Mayoristas -->
           <div class="tarjeta">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
               <h3>Listado de Mayoristas</h3>
-              <button id="btn-nuevo-mayorista" class="btn btn-primario" style="font-size: 0.85rem;">＋ Nuevo Mayorista</button>
+              <button id="btn-nuevo-mayorista" class="btn btn-primario" style="font-size: 0.85rem;">＋ Nuevo
+                Mayorista</button>
             </div>
             <div style="overflow-x: auto;">
               <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
@@ -1113,29 +1326,42 @@
             <div class="tarjeta" style="width: 95%; max-width: 480px; max-height: 90vh; overflow-y: auto;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                 <h3 id="modal-mayorista-titulo">Nuevo Mayorista</h3>
-                <button id="btn-cerrar-modal-may" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--color-texto-secundario);">✕</button>
+                <button id="btn-cerrar-modal-may"
+                  style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--color-texto-secundario);">✕</button>
               </div>
               <form id="form-mayorista">
                 <input type="hidden" id="mayorista-id">
                 <div style="margin-bottom: 0.8rem;">
-                  <label for="mayorista-nombre" style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Nombre / Razón Social</label>
-                  <input type="text" id="mayorista-nombre" required placeholder="Ej: Comercio Don Pedro" style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                  <label for="mayorista-nombre"
+                    style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Nombre / Razón
+                    Social</label>
+                  <input type="text" id="mayorista-nombre" required placeholder="Ej: Comercio Don Pedro"
+                    style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
                 </div>
                 <div style="margin-bottom: 0.8rem;">
-                  <label for="mayorista-direccion" style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Dirección</label>
-                  <input type="text" id="mayorista-direccion" placeholder="Ej: Av. San Martín 450" style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                  <label for="mayorista-direccion"
+                    style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Dirección</label>
+                  <input type="text" id="mayorista-direccion" placeholder="Ej: Av. San Martín 450"
+                    style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
                 </div>
                 <div style="margin-bottom: 0.8rem;">
-                  <label for="mayorista-whatsapp" style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Teléfono / WhatsApp (con código de país)</label>
-                  <input type="text" id="mayorista-whatsapp" placeholder="Ej: 5493815123456" style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                  <label for="mayorista-whatsapp"
+                    style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Teléfono /
+                    WhatsApp (con código de país)</label>
+                  <input type="text" id="mayorista-whatsapp" placeholder="Ej: 5493815123456"
+                    style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
                 </div>
                 <div style="margin-bottom: 1rem;">
-                  <label for="mayorista-marcacion" style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">% Marcación Preferencial</label>
-                  <input type="number" id="mayorista-marcacion" required min="0" max="100" value="15" style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                  <label for="mayorista-marcacion"
+                    style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">% Marcación
+                    Preferencial</label>
+                  <input type="number" id="mayorista-marcacion" required min="0" max="100" value="15"
+                    style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
                 </div>
                 <div style="display: flex; gap: 0.5rem;">
                   <button type="submit" class="btn btn-primario" style="flex: 1;">💾 Guardar</button>
-                  <button type="button" id="btn-cancelar-modal-may" class="btn btn-secundario" style="flex: 0.6;">Cancelar</button>
+                  <button type="button" id="btn-cancelar-modal-may" class="btn btn-secundario"
+                    style="flex: 0.6;">Cancelar</button>
                 </div>
               </form>
             </div>
@@ -1146,30 +1372,45 @@
             <div class="tarjeta" style="width: 95%; max-width: 700px; max-height: 92vh; overflow-y: auto;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                 <h3 id="detalle-may-titulo" style="margin: 0;">Detalle Mayorista</h3>
-                <button id="btn-cerrar-detalle-may" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--color-texto-secundario);">✕</button>
+                <button id="btn-cerrar-detalle-may"
+                  style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--color-texto-secundario);">✕</button>
               </div>
               <input type="hidden" id="detalle-may-id">
 
               <!-- KPIs del mayorista -->
-              <div id="detalle-may-kpis" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin-bottom: 1rem;"></div>
+              <div id="detalle-may-kpis"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin-bottom: 1rem;">
+              </div>
 
               <!-- Registrar Entrega (incrementa deuda) -->
-              <div style="border: 1px dashed var(--color-semaforo-rojo); border-radius: var(--radio-borde); padding: 0.75rem; margin-bottom: 1rem; background: rgba(239,68,68,0.03);">
-                <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: var(--color-semaforo-rojo);">📦 Registrar Entrega de Mercadería (incrementa deuda)</h4>
+              <div
+                style="border: 1px dashed var(--color-semaforo-rojo); border-radius: var(--radio-borde); padding: 0.75rem; margin-bottom: 1rem; background: rgba(239,68,68,0.03);">
+                <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: var(--color-semaforo-rojo);">📦 Registrar
+                  Entrega de Mercadería (incrementa deuda)</h4>
                 <div style="display: flex; gap: 0.5rem; align-items: flex-end; flex-wrap: wrap;">
                   <div style="min-width: 140px;">
-                    <label for="entrega-may-fecha" style="display: block; font-size: 0.7rem; color: var(--color-texto-secundario); margin-bottom: 0.15rem;">Fecha</label>
-                    <input type="date" id="entrega-may-fecha" style="width: 100%; padding: 0.35rem; border: 1px solid var(--color-borde); border-radius: 4px; font-size: 0.85rem;">
+                    <label for="entrega-may-fecha"
+                      style="display: block; font-size: 0.7rem; color: var(--color-texto-secundario); margin-bottom: 0.15rem;">Fecha</label>
+                    <input type="date" id="entrega-may-fecha"
+                      style="width: 100%; padding: 0.35rem; border: 1px solid var(--color-borde); border-radius: 4px; font-size: 0.85rem;">
                   </div>
                   <div style="min-width: 120px;">
-                    <label for="entrega-may-monto" style="display: block; font-size: 0.7rem; color: var(--color-texto-secundario); margin-bottom: 0.15rem;">Monto Ticket ($)</label>
-                    <input type="number" id="entrega-may-monto" min="0" step="100" value="0" style="width: 100%; padding: 0.35rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                    <label for="entrega-may-monto"
+                      style="display: block; font-size: 0.7rem; color: var(--color-texto-secundario); margin-bottom: 0.15rem;">Monto
+                      Ticket ($)</label>
+                    <input type="number" id="entrega-may-monto" min="0" step="100" value="0"
+                      style="width: 100%; padding: 0.35rem; border: 1px solid var(--color-borde); border-radius: 4px;">
                   </div>
                   <div style="flex: 1; min-width: 120px;">
-                    <label for="entrega-may-nota" style="display: block; font-size: 0.7rem; color: var(--color-texto-secundario); margin-bottom: 0.15rem;">Nota (opcional)</label>
-                    <input type="text" id="entrega-may-nota" placeholder="Ej: 5 bolsas, 3 cajas" style="width: 100%; padding: 0.35rem; border: 1px solid var(--color-borde); border-radius: 4px; font-size: 0.85rem;">
+                    <label for="entrega-may-nota"
+                      style="display: block; font-size: 0.7rem; color: var(--color-texto-secundario); margin-bottom: 0.15rem;">Nota
+                      (opcional)</label>
+                    <input type="text" id="entrega-may-nota" placeholder="Ej: 5 bolsas, 3 cajas"
+                      style="width: 100%; padding: 0.35rem; border: 1px solid var(--color-borde); border-radius: 4px; font-size: 0.85rem;">
                   </div>
-                  <button type="button" id="btn-registrar-entrega-may" class="btn btn-primario" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; white-space: nowrap;">📦 Registrar Entrega</button>
+                  <button type="button" id="btn-registrar-entrega-may" class="btn btn-primario"
+                    style="padding: 0.4rem 0.8rem; font-size: 0.8rem; white-space: nowrap;">📦 Registrar
+                    Entrega</button>
                 </div>
               </div>
 
@@ -1179,7 +1420,8 @@
                 <div style="overflow-x: auto; max-height: 350px; overflow-y: auto;">
                   <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem;">
                     <thead>
-                      <tr style="background-color: var(--color-fondo-pagina); border-bottom: 2px solid var(--color-borde); position: sticky; top: 0;">
+                      <tr
+                        style="background-color: var(--color-fondo-pagina); border-bottom: 2px solid var(--color-borde); position: sticky; top: 0;">
                         <th style="padding: 0.5rem;">Fecha</th>
                         <th style="padding: 0.5rem;">Tipo</th>
                         <th style="padding: 0.5rem;">Monto</th>
@@ -1199,11 +1441,13 @@
         <article id="modulo-cuentas" class="modulo-seccion">
           <div class="modulo-header">
             <h2>Cuentas Bancarias & Billeteras Digitales</h2>
-            <p>Controla los saldos disponibles en tus cuentas y billeteras (Mercado Pago, Naranja X, Banco, etc.) y revisa su historial de ingresos y egresos.</p>
+            <p>Controla los saldos disponibles en tus cuentas y billeteras (Mercado Pago, Naranja X, Banco, etc.) y
+              revisa su historial de ingresos y egresos.</p>
           </div>
 
           <!-- Tarjetas KPI de Saldos de Cuentas -->
-          <div id="contenedor-kpis-cuentas" class="grilla-kpis" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 1.5rem;"></div>
+          <div id="contenedor-kpis-cuentas" class="grilla-kpis"
+            style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 1.5rem;"></div>
 
           <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; align-items: start;">
             <!-- Padrón de Cuentas -->
@@ -1215,7 +1459,8 @@
               <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
                   <thead>
-                    <tr style="background-color: var(--color-fondo-pagina); border-bottom: 2px solid var(--color-borde);">
+                    <tr
+                      style="background-color: var(--color-fondo-pagina); border-bottom: 2px solid var(--color-borde);">
                       <th style="padding: 0.6rem;">Cuenta</th>
                       <th style="padding: 0.6rem;">Saldo ($)</th>
                       <th style="padding: 0.6rem; text-align: center;">Acción</th>
@@ -1230,12 +1475,14 @@
             <div class="tarjeta">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                 <h3 id="titulo-historial-cuenta">Movimientos de Cuenta</h3>
-                <span id="badge-tipo-cuenta" style="font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: var(--color-fondo-pagina); font-weight: 600;"></span>
+                <span id="badge-tipo-cuenta"
+                  style="font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: var(--color-fondo-pagina); font-weight: 600;"></span>
               </div>
               <div style="overflow-x: auto; max-height: 420px; overflow-y: auto;">
                 <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem;">
                   <thead>
-                    <tr style="background-color: var(--color-fondo-pagina); border-bottom: 2px solid var(--color-borde); position: sticky; top: 0;">
+                    <tr
+                      style="background-color: var(--color-fondo-pagina); border-bottom: 2px solid var(--color-borde); position: sticky; top: 0;">
                       <th style="padding: 0.5rem;">Fecha</th>
                       <th style="padding: 0.5rem;">Origen / Destino</th>
                       <th style="padding: 0.5rem;">Tipo</th>
@@ -1254,33 +1501,47 @@
             <div class="tarjeta" style="width: 95%; max-width: 440px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                 <h3 id="modal-cuenta-titulo">Nueva Cuenta / Billetera</h3>
-                <button id="btn-cerrar-modal-cuenta" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--color-texto-secundario);">✕</button>
+                <button id="btn-cerrar-modal-cuenta"
+                  style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--color-texto-secundario);">✕</button>
               </div>
               <form id="form-cuenta">
                 <input type="hidden" id="cuenta-id">
                 <div style="margin-bottom: 0.8rem;">
-                  <label for="cuenta-nombre" style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Nombre de la Cuenta / Entidad</label>
-                  <input type="text" id="cuenta-nombre" required placeholder="Ej: Mercado Pago, Banco Galicia" style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                  <label for="cuenta-nombre"
+                    style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Nombre de la
+                    Cuenta / Entidad</label>
+                  <input type="text" id="cuenta-nombre" required placeholder="Ej: Mercado Pago, Banco Galicia"
+                    style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
                 </div>
                 <div style="margin-bottom: 0.8rem;">
-                  <label for="cuenta-tipo" style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Tipo de Cuenta</label>
-                  <select id="cuenta-tipo" style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                  <label for="cuenta-tipo"
+                    style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Tipo de
+                    Cuenta</label>
+                  <select id="cuenta-tipo"
+                    style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
                     <option value="Billetera Digital">Billetera Digital (Mercado Pago, Naranja X, Ualá)</option>
                     <option value="Cuenta Bancaria">Cuenta Bancaria (Banco CBU/CVU Directo)</option>
                     <option value="Plataforma Delivery">Plataforma Delivery (Pedidos Ya, Rappi)</option>
                   </select>
                 </div>
                 <div style="margin-bottom: 0.8rem;">
-                  <label for="cuenta-icono" style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Ícono Emoji</label>
-                  <input type="text" id="cuenta-icono" value="📲" style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                  <label for="cuenta-icono"
+                    style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Ícono
+                    Emoji</label>
+                  <input type="text" id="cuenta-icono" value="📲"
+                    style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
                 </div>
                 <div style="margin-bottom: 1rem;">
-                  <label for="cuenta-saldo-inicial" style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Saldo Inicial ($)</label>
-                  <input type="number" id="cuenta-saldo-inicial" min="0" step="100" value="0" style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
+                  <label for="cuenta-saldo-inicial"
+                    style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem;">Saldo Inicial
+                    ($)</label>
+                  <input type="number" id="cuenta-saldo-inicial" min="0" step="100" value="0"
+                    style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px;">
                 </div>
                 <div style="display: flex; gap: 0.5rem;">
                   <button type="submit" class="btn btn-primario" style="flex: 1;">💾 Guardar</button>
-                  <button type="button" id="btn-cancelar-modal-cuenta" class="btn btn-secundario" style="flex: 0.6;">Cancelar</button>
+                  <button type="button" id="btn-cancelar-modal-cuenta" class="btn btn-secundario"
+                    style="flex: 0.6;">Cancelar</button>
                 </div>
               </form>
             </div>
@@ -1291,7 +1552,8 @@
         <article id="modulo-configuracion" class="modulo-seccion">
           <div class="modulo-header">
             <h2>Configuración de Categorías, Marcaciones & Proveedores</h2>
-            <p>Administra las categorías de productos con sus % de marcación y asigna proveedores a sus categorías correspondientes.</p>
+            <p>Administra las categorías de productos con sus % de marcación y asigna proveedores a sus categorías
+              correspondientes.</p>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start;">
@@ -1299,12 +1561,14 @@
             <div class="tarjeta">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                 <h3>Padrón de Proveedores</h3>
-                <button id="btn-nuevo-proveedor-modal" class="btn btn-primario" style="font-size: 0.8rem;">➕ Nuevo Proveedor</button>
+                <button id="btn-nuevo-proveedor-modal" class="btn btn-primario" style="font-size: 0.8rem;">➕ Nuevo
+                  Proveedor</button>
               </div>
               <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
                   <thead>
-                    <tr style="background-color: var(--color-fondo-pagina); border-bottom: 1px solid var(--color-borde);">
+                    <tr
+                      style="background-color: var(--color-fondo-pagina); border-bottom: 1px solid var(--color-borde);">
                       <th style="padding: 0.6rem;">Proveedor</th>
                       <th style="padding: 0.6rem;">Categoría Asignada</th>
                       <th style="padding: 0.6rem; text-align: center;">Acción</th>
@@ -1325,12 +1589,18 @@
                 <form id="form-proveedor">
                   <input type="hidden" id="config-proveedor-id">
                   <div style="margin-bottom: 1rem;">
-                    <label for="config-proveedor-nombre" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del Proveedor</label>
-                    <input type="text" id="config-proveedor-nombre" required placeholder="Ej: Coca-Cola, Pepsi..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                    <label for="config-proveedor-nombre"
+                      style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del
+                      Proveedor</label>
+                    <input type="text" id="config-proveedor-nombre" required placeholder="Ej: Coca-Cola, Pepsi..."
+                      style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                   </div>
                   <div style="margin-bottom: 1rem;">
-                    <label for="config-proveedor-categoria" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Categoría Principal</label>
-                    <select id="config-proveedor-categoria" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);"></select>
+                    <label for="config-proveedor-categoria"
+                      style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Categoría
+                      Principal</label>
+                    <select id="config-proveedor-categoria" required
+                      style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);"></select>
                   </div>
                   <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
                     <button type="button" id="btn-cancelar-modal-proveedor" class="btn btn-secundario">Cancelar</button>
@@ -1346,7 +1616,8 @@
         <article id="modulo-proyectos" class="modulo-seccion">
           <div class="modulo-header">
             <h2>Gestión de Proyectos, Locales & Horarios del Comercio</h2>
-            <p>Administra múltiples proyectos de negocio, locales comerciales y sus configuraciones de horario de atención.</p>
+            <p>Administra múltiples proyectos de negocio, locales comerciales y sus configuraciones de horario de
+              atención.</p>
           </div>
 
           <!-- Proyectos -->
@@ -1354,11 +1625,13 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
               <div>
                 <h3>Proyectos de Negocio</h3>
-                <p style="font-size: 0.85rem; color: var(--color-texto-secundario);">Selecciona el proyecto activo o crea uno nuevo para simular.</p>
+                <p style="font-size: 0.85rem; color: var(--color-texto-secundario);">Selecciona el proyecto activo o
+                  crea uno nuevo para simular.</p>
               </div>
               <button id="btn-nuevo-proyecto" class="btn btn-primario">➕ Nuevo Proyecto</button>
             </div>
-            <div id="lista-proyectos-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;"></div>
+            <div id="lista-proyectos-cards"
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;"></div>
           </div>
 
           <!-- Locales del Proyecto Activo -->
@@ -1366,7 +1639,8 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
               <div>
                 <h3>Locales Comerciales & Horarios de Atención</h3>
-                <p style="font-size: 0.85rem; color: var(--color-texto-secundario);">Configura los datos del local, venta proyectada y rango de apertura/cierre.</p>
+                <p style="font-size: 0.85rem; color: var(--color-texto-secundario);">Configura los datos del local,
+                  venta proyectada y rango de apertura/cierre.</p>
               </div>
               <button id="btn-nuevo-local" class="btn btn-primario">➕ Agregar Local</button>
             </div>
@@ -1397,13 +1671,41 @@
               </div>
               <form id="form-proyecto">
                 <input type="hidden" id="proyecto-modal-id">
+
+                <!-- Campo Logo con Previsualización -->
                 <div style="margin-bottom: 1rem;">
-                  <label for="proyecto-modal-nombre" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del Proyecto</label>
-                  <input type="text" id="proyecto-modal-nombre" required placeholder="Ej: Panadería & Confitería, Gastronomía..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                  <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Logo de
+                    la Empresa / Proyecto</label>
+                  <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div id="preview-logo-contenedor"
+                      style="width: 60px; height: 60px; border-radius: 12px; border: 2px dashed var(--color-borde); display: flex; align-items: center; justify-content: center; background-color: var(--color-fondo-pagina); overflow: hidden; position: relative;">
+                      <span id="preview-logo-placeholder" style="font-size: 1.5rem;">🏬</span>
+                      <img id="preview-logo-img" src="" alt="Previsualización logo"
+                        style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div style="flex: 1;">
+                      <input type="file" id="proyecto-modal-logo-file" accept="image/*"
+                        style="font-size: 0.85rem; width: 100%;">
+                      <input type="hidden" id="proyecto-modal-logo-base64">
+                      <p style="font-size: 0.75rem; color: var(--color-texto-secundario); margin: 0.25rem 0 0 0;">
+                        Formatos: PNG, JPG, WebP, SVG. Previsualización instantánea.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                  <label for="proyecto-modal-nombre"
+                    style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del
+                    Proyecto</label>
+                  <input type="text" id="proyecto-modal-nombre" required
+                    placeholder="Ej: Panadería & Confitería, Gastronomía..."
+                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                 </div>
                 <div style="margin-bottom: 1rem;">
-                  <label for="proyecto-modal-descripcion" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Descripción</label>
-                  <textarea id="proyecto-modal-descripcion" rows="3" placeholder="Breve resumen del tipo de negocio..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde); font-family: inherit;"></textarea>
+                  <label for="proyecto-modal-descripcion"
+                    style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Descripción</label>
+                  <textarea id="proyecto-modal-descripcion" rows="3" placeholder="Breve resumen del tipo de negocio..."
+                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde); font-family: inherit;"></textarea>
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
                   <button type="button" id="btn-cancelar-modal-proyecto" class="btn btn-secundario">Cancelar</button>
@@ -1422,33 +1724,48 @@
               </div>
               <form id="form-local">
                 <input type="hidden" id="local-modal-id">
-                
+
                 <div style="margin-bottom: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
                   <div>
-                    <label for="local-modal-nombre" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del Local</label>
-                    <input type="text" id="local-modal-nombre" required placeholder="Ej: Local Centro, Sucursal Belgrano..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                    <label for="local-modal-nombre"
+                      style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del
+                      Local</label>
+                    <input type="text" id="local-modal-nombre" required
+                      placeholder="Ej: Local Centro, Sucursal Belgrano..."
+                      style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                   </div>
                   <div>
-                    <label for="local-modal-direccion" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Dirección del Inmueble</label>
-                    <input type="text" id="local-modal-direccion" placeholder="Ej: Av. Principal #1040" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                    <label for="local-modal-direccion"
+                      style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Dirección
+                      del Inmueble</label>
+                    <input type="text" id="local-modal-direccion" placeholder="Ej: Av. Principal #1040"
+                      style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                   </div>
                 </div>
 
                 <!-- Configuración de Horarios Semanales Detallados -->
-                <div style="margin-bottom: 1rem; background-color: var(--color-fondo-pagina); padding: 1rem; border-radius: var(--radio-borde); border: 1px solid var(--color-borde);">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                    <h4 style="margin: 0; font-size: 0.95rem; color: var(--color-texto-principal);">Horarios de Atención Semanales del Comercio</h4>
-                    <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">Permite turnos cortados y días cerrados</span>
+                <div
+                  style="margin-bottom: 1rem; background-color: var(--color-fondo-pagina); padding: 1rem; border-radius: var(--radio-borde); border: 1px solid var(--color-borde);">
+                  <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <h4 style="margin: 0; font-size: 0.95rem; color: var(--color-texto-principal);">Horarios de Atención
+                      Semanales del Comercio</h4>
+                    <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">Permite turnos cortados y
+                      días cerrados</span>
                   </div>
 
-                  <div id="contenedor-horarios-dias" style="display: flex; flex-direction: column; gap: 0.6rem; max-height: 280px; overflow-y: auto; padding-right: 0.25rem;">
+                  <div id="contenedor-horarios-dias"
+                    style="display: flex; flex-direction: column; gap: 0.6rem; max-height: 280px; overflow-y: auto; padding-right: 0.25rem;">
                     <!-- Se genera dinámicamente para los 7 días de la semana -->
                   </div>
                 </div>
 
                 <div style="margin-bottom: 1rem;">
-                  <label for="local-modal-ventas-min" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Estimado Venta Mínima de la Zona ($)</label>
-                  <input type="number" id="local-modal-ventas-min" required min="0" step="100000" placeholder="15000000" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
+                  <label for="local-modal-ventas-min"
+                    style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Estimado Venta
+                    Mínima de la Zona ($)</label>
+                  <input type="number" id="local-modal-ventas-min" required min="0" step="100000" placeholder="15000000"
+                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
@@ -1464,60 +1781,116 @@
         <article id="modulo-portabilidad" class="modulo-seccion">
           <div class="modulo-header">
             <h2>Gestión de Datos & Respaldos (Portabilidad)</h2>
-            <p>Exporta o importa la base de datos completa de proyectos, locales, gastos y simulaciones en formato JSON.</p>
+            <p>Exporta o importa la base de datos completa de proyectos, locales, gastos y simulaciones en formato JSON.
+            </p>
           </div>
 
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
-            <!-- Tarjeta Exportar -->
-            <div class="tarjeta" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <!-- Tarjeta Sincronización Nube (Supabase) -->
+          <div class="tarjeta"
+            style="grid-column: 1 / -1; border-top: 4px solid var(--color-primario); background: rgba(59,130,246,0.03);">
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
               <div>
-                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📥</div>
-                <h3>Exportar Base de Datos (Backup)</h3>
-                <p style="font-size: 0.85rem; color: var(--color-texto-secundario); margin-top: 0.5rem; margin-bottom: 1.5rem;">
-                  Descarga un archivo <strong>JSON</strong> respaldando todos los proyectos, locales, nóminas, productos y simulaciones actuales.
+                <h3 style="margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                  <span>☁️</span> Sincronización Multi-Dispositivo en Tiempo Real (Supabase Cloud)
+                </h3>
+                <p style="font-size: 0.85rem; color: var(--color-texto-secundario); margin: 0.25rem 0 0 0;">
+                  Conectá la aplicación a una base de datos <strong>PostgreSQL serverless gratuita (Supabase)</strong>
+                  para sincronizar todos tus datos en vivo entre tu PC, celular y tablet al usar GitHub Pages.
                 </p>
               </div>
-              <button id="btn-exportar-json" class="btn btn-primario" style="width: 100%;">
-                ⬇️ Exportar Backup JSON
-              </button>
+              <div id="supabase-status-text" style="font-size: 0.85rem;"></div>
             </div>
 
-            <!-- Tarjeta Importar -->
-            <div class="tarjeta" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
               <div>
-                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📤</div>
-                <h3>Importar Base de Datos (Restaurar)</h3>
-                <p style="font-size: 0.85rem; color: var(--color-texto-secundario); margin-top: 0.5rem; margin-bottom: 1rem;">
-                  Carga un archivo de respaldo previo en formato <strong>.json</strong> para reemplazar los datos del sistema.
-                </p>
-                <input type="file" id="input-importar-json" accept=".json" style="display: none;">
+                <label for="supabase-url"
+                  style="display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.2rem;">Supabase Project
+                  URL</label>
+                <input type="text" id="supabase-url" placeholder="https://xxxxx.supabase.co"
+                  style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px; font-size: 0.85rem;">
+                <small
+                  style="display: block; margin-top: 0.2rem; font-size: 0.7rem; color: var(--color-texto-secundario);">
+                  📍 Copiala desde Supabase → <strong>Project Settings → API → Project URL</strong>. Si termina en
+                  <code>/rest/v1</code> no hay problema, se limpia automáticamente.
+                </small>
               </div>
-              <button id="btn-seleccionar-importar-json" class="btn btn-secundario" style="width: 100%;">
-                📂 Seleccionar Archivo JSON...
-              </button>
+              <div>
+                <label for="supabase-key"
+                  style="display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.2rem;">Supabase Anon /
+                  Public Key</label>
+                <input type="password" id="supabase-key" placeholder="eyJhbGciOiJIUzI1NiIs..."
+                  style="width: 100%; padding: 0.4rem; border: 1px solid var(--color-borde); border-radius: 4px; font-size: 0.85rem;">
+                <small
+                  style="display: block; margin-top: 0.2rem; font-size: 0.7rem; color: var(--color-texto-secundario);">
+                  🔑 Copiala desde Supabase → <strong>Project Settings → API → Project API Keys → anon public</strong>.
+                </small>
+              </div>
+              <div style="display: flex; align-items: flex-end; gap: 0.5rem;">
+                <button id="btn-conectar-supabase" class="btn btn-primario"
+                  style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">🔌 Conectar Nube</button>
+                <button id="btn-sincronizar-nube-ahora" class="btn btn-secundario"
+                  style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">🔄 Sincronizar Ahora</button>
+                <button id="btn-desconectar-supabase" class="btn btn-secundario"
+                  style="font-size: 0.85rem; padding: 0.4rem 0.8rem; color: var(--color-semaforo-rojo); display: none;">Desconectar</button>
+              </div>
             </div>
 
-            <!-- Tarjeta Restablecer / Pánico -->
-            <div class="tarjeta" style="display: flex; flex-direction: column; justify-content: space-between; border-left: 4px solid var(--color-semaforo-rojo);">
-              <div>
-                <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
-                <h3>Restablecer Datos Demo</h3>
-                <p style="font-size: 0.85rem; color: var(--color-texto-secundario); margin-top: 0.5rem; margin-bottom: 1.5rem;">
-                  Borra las modificaciones actuales y restaura los datos iniciales de demostración de Panadería & Comercio.
-                </p>
-              </div>
-              <button id="btn-restablecer-demo" class="btn btn-secundario" style="width: 100%; color: var(--color-semaforo-rojo); border-color: var(--color-semaforo-rojo-suave);">
-                🔄 Reiniciar Datos Demo
-              </button>
+            <!-- Banner de Feedback Elegante para Mensajes y Errores de Conexión -->
+            <div id="supabase-feedback-box"
+              style="display: none; margin-top: 1rem; padding: 0.75rem 1rem; border-radius: var(--radio-borde, 6px); font-size: 0.85rem; line-height: 1.4; transition: all 0.3s ease;">
             </div>
+
+            <details style="margin-top: 1rem; font-size: 0.8rem; color: var(--color-texto-secundario);">
+              <summary style="cursor: pointer; font-weight: 600; color: var(--color-primario);">📖 Guía rápida: Cómo
+                inicializar las Tablas Relacionales en Supabase (SQL Editor)</summary>
+              <ol style="margin-top: 0.5rem; padding-left: 1.2rem; line-height: 1.5;">
+                <li>Ingresá a <a href="https://supabase.com" target="_blank"
+                    style="color: var(--color-primario);">supabase.com</a> y abrí tu proyecto.</li>
+                <li>En el panel izquierdo ve a <strong>SQL Editor</strong>, abre un <em>New Query</em>, copia todo el
+                  contenido del archivo <code>database/schema_postgresql.sql</code> de tu proyecto y haz clic en
+                  <strong>Run</strong>.
+                </li>
+                <li>Para otorgar permisos públicos RLS a las tablas relacionales, ejecuta este comando:
+                  <pre
+                    style="background: var(--color-fondo-pagina); padding: 0.5rem; border-radius: 4px; margin: 0.3rem 0; overflow-x: auto;">-- Otorgar permisos RLS a las tablas del sistema relacional
+GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated;
+
+-- Habilitar politicas publicas en tablas relacionales
+ALTER TABLE empresas ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Publico Empresas" ON empresas FOR ALL USING (true) WITH CHECK (true);
+ALTER TABLE locales ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Publico Locales" ON locales FOR ALL USING (true) WITH CHECK (true);
+ALTER TABLE roles_empleados ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Publico Roles Empleados" ON roles_empleados FOR ALL USING (true) WITH CHECK (true);
+ALTER TABLE empleados ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Publico Empleados" ON empleados FOR ALL USING (true) WITH CHECK (true);</pre>
+                </li>
+                <li>Copiá la <strong>Project URL</strong> y la <strong>anon key</strong> desde <em>Project Settings ->
+                    API</em> y pegalas arriba.</li>
+              </ol>
+            </details>
           </div>
-        </article>
+  </div>
+  </article>
 
-      </section>
-    </main>
+  </section>
+  </main>
+  <!-- Spinner Overlay Global de Carga -->
+  <div id="overlay-spinner-global" class="overlay-spinner-global activo">
+    <div class="spinner-tarjeta">
+      <div class="spinner-icono"></div>
+      <div>
+        <div id="spinner-texto-mensaje" class="spinner-texto">Cargando datos desde la Base de Datos...</div>
+        <div class="spinner-subtexto">Por favor aguarde un instante</div>
+      </div>
+    </div>
   </div>
 
-  <script src="js/baseDatos.js"></script>
+  <script src="js/clienteSupabase.js"></script>
+  <script src="js/repositorioRelacional.js"></script>
   <script src="modulos/gastos/gastos.js"></script>
   <script src="modulos/personal/personal.js"></script>
   <script src="modulos/productos/productos.js"></script>
@@ -1532,4 +1905,5 @@
   <script src="modulos/portabilidad/portabilidad.js"></script>
   <script src="js/app.js"></script>
 </body>
+
 </html>

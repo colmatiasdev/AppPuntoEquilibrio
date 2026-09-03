@@ -11,10 +11,63 @@ window.ModuloProductos = {
     this.configurarEventos();
   },
 
-  cargarDatos() {
+  async cargarDatos() {
     const estado = window.BaseDatos.obtenerEstado();
-    this.categorias = estado.categoriasProductos.filter(c => c.idProyecto === estado.idProyectoActivo);
-    this.productos = window.BaseDatos.obtenerProductosProyectoActivo();
+
+    // Si Supabase relacional esta activo, traer categorias y productos directo de la base de datos
+    if (window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva) {
+      try {
+        const empresaId = window.EstadoGlobal.idProyectoActivo || 'e0000000-0000-4000-8000-000000000001';
+        const catsRel = await window.RepositorioRelacional.obtenerCategoriasEmpresa(empresaId);
+        const prodsRel = await window.RepositorioRelacional.obtenerProductosEmpresa(empresaId);
+
+        if (catsRel) {
+          this.categorias = catsRel.map(c => ({
+            id: c.id,
+            nombre: c.nombre,
+            porcentajeMarcacionDefecto: parseFloat(c.porcentaje_marcacion) || 0,
+            frecuenciaVenta: 'Diaria'
+          }));
+        }
+
+        if (prodsRel) {
+          this.productos = prodsRel.map(p => {
+            const unidadesPorBulto = p.unidades_por_bulto !== undefined && p.unidades_por_bulto !== null ? parseInt(p.unidades_por_bulto) : 1;
+            const cantidadSimulada = p.cantidad_simulada !== undefined && p.cantidad_simulada !== null ? parseInt(p.cantidad_simulada) : 1;
+            const frecuenciaVenta = p.frecuencia_venta || 'Diaria';
+
+            const costoUnitario = parseFloat(p.costo_unitario) || 0;
+            const ventaUnitario = parseFloat(p.precio_venta) || 0;
+            
+            const costoBulto = costoUnitario * unidadesPorBulto;
+            const ventaBulto = ventaUnitario * unidadesPorBulto;
+
+            const markup = costoUnitario > 0 ? ((ventaUnitario - costoUnitario) / costoUnitario) * 100 : 0;
+            
+            return {
+              id: p.id,
+              nombre: p.nombre,
+              idCategoria: p.categoria_id,
+              costoUnitario: costoUnitario,
+              precioVentaUnitario: ventaUnitario,
+              precioCostoBulto: costoBulto,
+              precioVentaBulto: ventaBulto,
+              unidadesPorBulto: unidadesPorBulto,
+              porcentajeMarcacion: Math.round(markup * 100) / 100, // Redondeo a 2 decimales
+              frecuenciaVenta: frecuenciaVenta,
+              cantidadSimulada: cantidadSimulada
+            };
+          });
+        }
+      } catch (err) {
+        console.warn('[ModuloProductos] Fallo la carga relacional, usando fallback:', err);
+        this.categorias = estado.categoriasProductos.filter(c => c.idProyecto === estado.idProyectoActivo);
+        this.productos = window.BaseDatos.obtenerProductosProyectoActivo();
+      }
+    } else {
+      this.categorias = estado.categoriasProductos.filter(c => c.idProyecto === estado.idProyectoActivo);
+      this.productos = window.BaseDatos.obtenerProductosProyectoActivo();
+    }
 
     this.renderizarCategorias();
     this.renderizarTablaProductos();
@@ -35,7 +88,7 @@ window.ModuloProductos = {
     this.categorias.forEach(cat => {
       const tag = document.createElement('div');
       tag.style.cssText = 'background-color: var(--color-fondo-pagina); border: 1px solid var(--color-borde); padding: 0.5rem 0.75rem; border-radius: 6px; display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;';
-      
+
       const elNombre = document.createElement('span');
       elNombre.style.fontWeight = '600';
       elNombre.textContent = cat.nombre;
@@ -123,6 +176,9 @@ window.ModuloProductos = {
     this.productos.forEach(prod => {
       const cat = this.categorias.find(c => c.id === prod.idCategoria);
       const nombreCat = cat ? cat.nombre : 'Sin Categoría';
+      const porcentajeGanancia = prod.precioVentaBulto > 0
+        ? ((prod.precioVentaBulto - prod.precioCostoBulto) / prod.precioVentaBulto * 100).toFixed(2)
+        : '0.00';
       const tr = document.createElement('tr');
       tr.style.borderBottom = '1px solid var(--color-borde)';
 
@@ -132,6 +188,7 @@ window.ModuloProductos = {
         <td style="padding: 0.75rem 1rem;">${prod.unidadesPorBulto}</td>
         <td style="padding: 0.75rem 1rem;">$ ${prod.precioCostoBulto.toLocaleString('es-AR')}</td>
         <td style="padding: 0.75rem 1rem; font-weight: 600;">${prod.porcentajeMarcacion}%</td>
+        <td style="padding: 0.75rem 1rem; font-weight: 600; color: var(--color-semaforo-verde-oscuro);">${porcentajeGanancia}%</td>
         <td style="padding: 0.75rem 1rem; font-weight: 700; color: var(--color-primario);">$ ${prod.precioVentaBulto.toLocaleString('es-AR')}</td>
         <td style="padding: 0.75rem 1rem; font-size: 0.85rem;">$ ${prod.costoUnitario.toLocaleString('es-AR')} → $ ${prod.precioVentaUnitario.toLocaleString('es-AR')}</td>
         <td style="padding: 0.75rem 1rem; text-align: center;">
@@ -190,9 +247,9 @@ window.ModuloProductos = {
     if (btnCancelarCat) btnCancelarCat.addEventListener('click', () => modalCat.classList.remove('activo'));
 
     if (formCat) {
-      formCat.addEventListener('submit', (e) => {
+      formCat.addEventListener('submit', async (e) => {
         e.preventDefault();
-        this.guardarCategoria();
+        await this.guardarCategoria();
         modalCat.classList.remove('activo');
       });
     }
@@ -218,9 +275,9 @@ window.ModuloProductos = {
     if (btnCancelarProd) btnCancelarProd.addEventListener('click', () => modalProd.classList.remove('activo'));
 
     if (formProd) {
-      formProd.addEventListener('submit', (e) => {
+      formProd.addEventListener('submit', async (e) => {
         e.preventDefault();
-        this.guardarProducto();
+        await this.guardarProducto();
         modalProd.classList.remove('activo');
       });
     }
@@ -313,7 +370,7 @@ window.ModuloProductos = {
     });
   },
 
-  guardarCategoria() {
+  async guardarCategoria() {
     const estado = window.BaseDatos.obtenerEstado();
     const id = document.getElementById('categoria-id').value;
     const nombre = document.getElementById('categoria-nombre').value;
@@ -337,11 +394,29 @@ window.ModuloProductos = {
       });
     }
 
+    // Sincronizar en la tabla relacional 'categorias_productos' de Supabase
+    if (window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva) {
+      try {
+        const empresaId = window.EstadoGlobal.idProyectoActivo || 'e0000000-0000-4000-8000-000000000001';
+        const payload = {
+          empresa_id: empresaId,
+          nombre: nombre,
+          porcentaje_marcacion: porcentaje,
+          descripcion: `Frecuencia venta: ${frecuencia}`
+        };
+        if (id && id.length === 36) payload.id = id;
+
+        await window.RepositorioRelacional.guardarCategoriaProducto(payload);
+      } catch (err) {
+        console.warn('[ModuloProductos] Error al guardar categoria en tabla relacional:', err);
+      }
+    }
+
     window.BaseDatos.guardar();
     this.cargarDatos();
   },
 
-  guardarProducto() {
+  async guardarProducto() {
     const estado = window.BaseDatos.obtenerEstado();
     const id = document.getElementById('producto-id').value;
     const nombre = document.getElementById('producto-nombre').value;
@@ -349,19 +424,23 @@ window.ModuloProductos = {
     const precioCostoBulto = parseFloat(document.getElementById('producto-costo-bulto').value) || 0;
     const unidadesPorBulto = parseInt(document.getElementById('producto-unidades-bulto').value) || 1;
     const porcentajeMarcacion = parseFloat(document.getElementById('producto-marcacion').value) || 0;
+
+    const costoBulto = parseFloat(document.getElementById('producto-costo-bulto').value) || 0;
+    const unidades = parseInt(document.getElementById('producto-unidades-bulto').value) || 1;
+    const marcacion = parseFloat(document.getElementById('producto-marcacion').value) || 0;
     const frecuenciaVenta = document.getElementById('producto-frecuencia').value;
-    const cantidadSimulada = parseInt(document.getElementById('producto-cantidad-simulada').value) || 0;
+    const cantidadSimulada = parseInt(document.getElementById('producto-cantidad-simulada').value) || 1;
 
-    const costoUnitario = unidadesPorBulto > 0 ? Math.round(precioCostoBulto / unidadesPorBulto) : 0;
-    const precioVentaBulto = Math.round(precioCostoBulto * (1 + porcentajeMarcacion / 100));
-    const precioVentaUnitario = unidadesPorBulto > 0 ? Math.round(precioVentaBulto / unidadesPorBulto) : 0;
+    const costoUnitario = unidades > 0 ? Math.round(costoBulto / unidades) : 0;
+    const precioVentaBulto = Math.round(costoBulto * (1 + marcacion / 100));
+    const precioVentaUnitario = unidades > 0 ? Math.round(precioVentaBulto / unidades) : 0;
 
-    const datos = {
+    const datosProd = {
       nombre,
       idCategoria,
-      unidadesPorBulto,
-      precioCostoBulto,
-      porcentajeMarcacion,
+      precioCostoBulto: costoBulto,
+      unidadesPorBulto: unidades,
+      porcentajeMarcacion: marcacion,
       precioVentaBulto,
       costoUnitario,
       precioVentaUnitario,
@@ -370,15 +449,45 @@ window.ModuloProductos = {
     };
 
     if (id) {
-      const prod = estado.productos.find(p => p.id === id);
-      if (prod) Object.assign(prod, datos);
+      let prod = estado.productos.find(p => p.id === id);
+      if (prod) {
+        Object.assign(prod, datosProd);
+      } else {
+        // Si no estaba en local pero vino de Supabase, lo guardamos para preservar variables locales
+        datosProd.id = id;
+        datosProd.idProyecto = estado.idProyectoActivo;
+        estado.productos.push(datosProd);
+      }
     } else {
-      datos.id = `prod_${Date.now()}`;
-      estado.productos.push(datos);
+      datosProd.id = `prod_${Date.now()}`;
+      datosProd.idProyecto = estado.idProyectoActivo;
+      estado.productos.push(datosProd);
+    }
+
+    // Sincronizar relacionalmente en la tabla 'productos' de Supabase
+    if (window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva) {
+      try {
+        const empresaId = window.EstadoGlobal.idProyectoActivo || 'e0000000-0000-4000-8000-000000000001';
+        const payload = {
+          empresa_id: empresaId,
+          categoria_id: idCategoria && idCategoria.length === 36 ? idCategoria : null,
+          nombre: nombre,
+          costo_unitario: costoUnitario,
+          precio_venta: precioVentaUnitario,
+          unidades_por_bulto: unidades,
+          cantidad_simulada: cantidadSimulada,
+          frecuencia_venta: frecuenciaVenta
+        };
+        if (id && id.length === 36) payload.id = id;
+
+        await window.RepositorioRelacional.guardarProducto(payload);
+      } catch (err) {
+        console.warn('[ModuloProductos] Error al guardar producto relacional:', err);
+      }
     }
 
     window.BaseDatos.guardar();
-    this.cargarDatos();
+    await this.cargarDatos();
     window.renderizarResumenKPIs();
   }
 };

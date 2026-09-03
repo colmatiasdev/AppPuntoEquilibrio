@@ -41,12 +41,33 @@ window.ModuloProveedores = {
     this.renderizarCompras();
   },
 
-  cargarSelectProveedores() {
+  async cargarSelectProveedores() {
     const select = document.getElementById('compra-proveedor');
     if (!select) return;
     select.innerHTML = '';
 
-    const proveedores = window.BaseDatos.obtenerProveedoresProyectoActivo();
+    let proveedores = [];
+    if (window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva) {
+      try {
+        const empresaId = 'e0000000-0000-4000-8000-000000000001';
+        const provsRel = await window.RepositorioRelacional.obtenerProveedoresEmpresa(empresaId);
+        if (provsRel && provsRel.length > 0) {
+          proveedores = provsRel.map(p => ({
+            id: p.id,
+            nombre: p.nombre,
+            cuit: p.cuit_cuil,
+            idCategoria: null
+          }));
+        } else {
+          proveedores = window.BaseDatos.obtenerProveedoresProyectoActivo();
+        }
+      } catch (err) {
+        proveedores = window.BaseDatos.obtenerProveedoresProyectoActivo();
+      }
+    } else {
+      proveedores = window.BaseDatos.obtenerProveedoresProyectoActivo();
+    }
+
     const estado = window.BaseDatos.obtenerEstado();
 
     if (proveedores.length === 0) {
@@ -56,7 +77,7 @@ window.ModuloProveedores = {
 
     proveedores.forEach(prov => {
       const cat = estado.categoriasProductos.find(c => c.id === prov.idCategoria);
-      const catNombre = cat ? cat.nombre : 'Sin Categoría';
+      const catNombre = cat ? cat.nombre : 'General';
       const opt = document.createElement('option');
       opt.value = prov.id;
       opt.textContent = `${prov.nombre} (${catNombre})`;

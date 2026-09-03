@@ -10,12 +10,40 @@ window.ModuloCuentas = {
     this.cargarDatos();
   },
 
-  cargarDatos() {
+  async cargarDatos() {
+    // Si Supabase relacional está activo, cargar cuentas desde la DB
+    if (window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva) {
+      try {
+        const empresaId = 'e0000000-0000-4000-8000-000000000001';
+        const cuentasRel = await window.RepositorioRelacional.obtenerCuentasEmpresa(empresaId);
+        if (cuentasRel && cuentasRel.length > 0) {
+          this._cuentasRelacionales = cuentasRel.map(c => ({
+            id: c.id,
+            nombre: c.nombre,
+            tipo: c.tipos_cuentas ? c.tipos_cuentas.nombre : 'Digital',
+            icono: '💳',
+            saldo: parseFloat(c.saldo_actual) || 0
+          }));
+        } else {
+          this._cuentasRelacionales = null;
+        }
+      } catch (err) {
+        console.warn('[ModuloCuentas] Error cargando cuentas relacionales:', err);
+        this._cuentasRelacionales = null;
+      }
+    } else {
+      this._cuentasRelacionales = null;
+    }
+
     this.renderizarKPIsSaldos();
     this.renderizarTablaCuentas();
     if (this.cuentaSeleccionadaId) {
       this.renderizarHistorialCuenta(this.cuentaSeleccionadaId);
     }
+  },
+
+  _obtenerCuentas() {
+    return this._cuentasRelacionales || window.BaseDatos.obtenerCuentasProyectoActivo();
   },
 
   configurarEventos() {
@@ -41,7 +69,7 @@ window.ModuloCuentas = {
     if (btnCancelar) btnCancelar.onclick = cerrar;
 
     if (form) {
-      form.onsubmit = (e) => {
+      form.onsubmit = async (e) => {
         e.preventDefault();
         const id = document.getElementById('cuenta-id').value;
         const nombre = document.getElementById('cuenta-nombre').value.trim();
@@ -62,6 +90,26 @@ window.ModuloCuentas = {
           icono,
           saldo: id ? saldoActual : saldoInicial
         });
+
+        // Sincronizar en la tabla relacional 'cuentas_bancarias' de Supabase
+        if (window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva) {
+          try {
+            const MAPA_TIPOS_UUID = {
+              'MERCADO_PAGO': 't1000000-0000-0000-0000-000000000001',
+              'NARANJA_X': 't2000000-0000-0000-0000-000000000002',
+              'CAJA_EFECTIVO': 't3000000-0000-0000-0000-000000000003'
+            };
+
+            await window.RepositorioRelacional.guardarCuentaBancaria({
+              empresa_id: 'e0000000-0000-4000-8000-000000000001',
+              tipo_cuenta_id: MAPA_TIPOS_UUID[tipo] || 't1000000-0000-0000-0000-000000000001',
+              nombre: nombre,
+              saldo_actual: id ? saldoActual : saldoInicial
+            });
+          } catch (err) {
+            console.warn('[ModuloCuentas] Error al guardar cuenta en tabla relacional:', err);
+          }
+        }
 
         // Si es una cuenta nueva con saldo inicial > 0, registrar el movimiento inicial
         if (!id && saldoInicial > 0 && nuevaCuenta) {
@@ -87,7 +135,7 @@ window.ModuloCuentas = {
     if (!contenedor) return;
     contenedor.innerHTML = '';
 
-    const cuentas = window.BaseDatos.obtenerCuentasProyectoActivo();
+    const cuentas = this._obtenerCuentas();
     const fMon = (v) => `$ ${Math.round(v).toLocaleString('es-AR')}`;
 
     let saldoTotalAcumulado = 0;
@@ -123,7 +171,7 @@ window.ModuloCuentas = {
     if (!tbody) return;
     tbody.innerHTML = '';
 
-    const cuentas = window.BaseDatos.obtenerCuentasProyectoActivo();
+    const cuentas = this._obtenerCuentas();
     const fMon = (v) => `$ ${Math.round(v).toLocaleString('es-AR')}`;
 
     if (cuentas.length === 0) {
@@ -209,7 +257,7 @@ window.ModuloCuentas = {
     });
   },
 
-  renderizarHistorialCuenta(idCuenta) {
+  async renderizarHistorialCuenta(idCuenta) {
     const tbody = document.getElementById('tabla-movimientos-cuenta-body');
     const titulo = document.getElementById('titulo-historial-cuenta');
     const badge = document.getElementById('badge-tipo-cuenta');
@@ -218,7 +266,7 @@ window.ModuloCuentas = {
     if (!tbody) return;
     tbody.innerHTML = '';
 
-    const cuentas = window.BaseDatos.obtenerCuentasProyectoActivo();
+    const cuentas = this._obtenerCuentas();
     const cta = cuentas.find(c => c.id === idCuenta);
 
     if (!cta) {
@@ -231,7 +279,28 @@ window.ModuloCuentas = {
     if (titulo) titulo.textContent = `${cta.icono || '💳'} Movimientos de ${cta.nombre}`;
     if (badge) badge.textContent = `Saldo: ${fMon(cta.saldo || 0)}`;
 
-    const movsRegistrados = window.BaseDatos.obtenerMovimientosCuenta(idCuenta);
+    let movsRegistrados = [];
+    if (window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva && idCuenta.length === 36) {
+      try {
+        const movsRel = await window.RepositorioRelacional.obtenerMovimientosCuenta(idCuenta);
+        if (movsRel && movsRel.length > 0) {
+          movsRegistrados = movsRel.map(m => ({
+            id: m.id,
+            fecha: m.fecha,
+            origenDestino: m.descripcion || m.tipo_movimiento,
+            tipo: m.tipo_movimiento,
+            monto: parseFloat(m.monto) || 0,
+            nota: m.descripcion
+          }));
+        } else {
+          movsRegistrados = window.BaseDatos.obtenerMovimientosCuenta(idCuenta);
+        }
+      } catch (e) {
+        movsRegistrados = window.BaseDatos.obtenerMovimientosCuenta(idCuenta);
+      }
+    } else {
+      movsRegistrados = window.BaseDatos.obtenerMovimientosCuenta(idCuenta);
+    }
 
     // Obtener también compras a proveedores pagadas desde esta cuenta
     const compras = window.BaseDatos.obtenerComprasLocalActivo();

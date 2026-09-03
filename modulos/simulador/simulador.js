@@ -14,10 +14,60 @@ window.ModuloSimulador = {
     this.configurarEventosProyecciones();
   },
 
-  cargarDatos() {
+  async cargarDatos() {
     const estado = window.BaseDatos.obtenerEstado();
-    this.categorias = estado.categoriasProductos.filter(c => c.idProyecto === estado.idProyectoActivo);
-    this.productos = window.BaseDatos.obtenerProductosProyectoActivo();
+
+    if (window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva) {
+      try {
+        const empresaId = window.EstadoGlobal.idProyectoActivo || 'e0000000-0000-4000-8000-000000000001';
+        const catsRel = await window.RepositorioRelacional.obtenerCategoriasEmpresa(empresaId);
+        const prodsRel = await window.RepositorioRelacional.obtenerProductosEmpresa(empresaId);
+
+        if (catsRel) {
+          this.categorias = catsRel.map(c => ({
+            id: c.id,
+            nombre: c.nombre
+          }));
+        }
+
+        if (prodsRel) {
+          this.productos = prodsRel.map(p => {
+            const unidadesPorBulto = p.unidades_por_bulto !== undefined && p.unidades_por_bulto !== null ? parseInt(p.unidades_por_bulto) : 1;
+            const cantidadSimulada = p.cantidad_simulada !== undefined && p.cantidad_simulada !== null ? parseInt(p.cantidad_simulada) : 1;
+            const frecuenciaVenta = p.frecuencia_venta || 'Diaria';
+
+            const costoUnitario = parseFloat(p.costo_unitario) || 0;
+            const ventaUnitario = parseFloat(p.precio_venta) || 0;
+            
+            const costoBulto = costoUnitario * unidadesPorBulto;
+            const ventaBulto = ventaUnitario * unidadesPorBulto;
+
+            const markup = costoUnitario > 0 ? ((ventaUnitario - costoUnitario) / costoUnitario) * 100 : 0;
+
+            return {
+              id: p.id,
+              nombre: p.nombre,
+              idCategoria: p.categoria_id,
+              costoUnitario: costoUnitario,
+              precioVentaUnitario: ventaUnitario,
+              precioCostoBulto: costoBulto,
+              precioVentaBulto: ventaBulto,
+              unidadesPorBulto: unidadesPorBulto,
+              porcentajeMarcacion: Math.round(markup * 100) / 100,
+              frecuenciaVenta: frecuenciaVenta,
+              cantidadSimulada: cantidadSimulada
+            };
+          });
+        }
+      } catch (e) {
+        console.warn('[ModuloSimulador] Error al cargar de Supabase, usando local:', e);
+        this.categorias = estado.categoriasProductos.filter(c => c.idProyecto === estado.idProyectoActivo);
+        this.productos = window.BaseDatos.obtenerProductosProyectoActivo();
+      }
+    } else {
+      this.categorias = estado.categoriasProductos.filter(c => c.idProyecto === estado.idProyectoActivo);
+      this.productos = window.BaseDatos.obtenerProductosProyectoActivo();
+    }
 
     this.renderizarTablaSimulacion();
     this.calcularYRenderizarEquilibrio();
@@ -80,7 +130,7 @@ window.ModuloSimulador = {
     if (this.productos.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="9" style="text-align: center; padding: 2rem; color: var(--color-texto-secundario);">
+          <td colspan="11" style="text-align: center; padding: 2rem; color: var(--color-texto-secundario);">
             No hay productos cargados en el proyecto activo. Agrega productos desde la sección <strong>Catálogo & Márgenes</strong>.
           </td>
         </tr>
@@ -96,16 +146,25 @@ window.ModuloSimulador = {
       const factorMensual = this.obtenerFactorMensual(prod.frecuenciaVenta);
 
       const cantSimuladaBase = prod.cantidadSimulada || 0;
-      const cantSimuladaEfectiva = cantSimuladaBase * multEscenario;
+      const cantSimuladaEfectiva = prod.simulacionHabilitada !== false ? (cantSimuladaBase * multEscenario) : 0;
       const volMensual = Math.round(cantSimuladaEfectiva * factorMensual);
       const ventaMensual = volMensual * prod.precioVentaBulto;
       const costoMensual = volMensual * prod.precioCostoBulto;
       const margenMensual = ventaMensual - costoMensual;
+      
+      const porcentajeGanancia = prod.precioVentaBulto > 0 ? ((prod.precioVentaBulto - prod.precioCostoBulto) / prod.precioVentaBulto * 100).toFixed(2) : '0.00';
+      const txtFreq = prod.frecuenciaVenta === 'Diaria' ? 'día' : prod.frecuenciaVenta === 'Semanal' ? 'sem' : 'mes';
 
       const tr = document.createElement('tr');
       tr.style.borderBottom = '1px solid var(--color-borde)';
+      if (prod.simulacionHabilitada === false) {
+        tr.style.opacity = '0.5';
+      }
 
       tr.innerHTML = `
+        <td style="padding: 0.6rem 0.8rem; text-align: center;">
+          <input type="checkbox" class="chk-habilitar-simulacion" data-id="${prod.id}" ${prod.simulacionHabilitada !== false ? 'checked' : ''} style="transform: scale(1.2); cursor: pointer;">
+        </td>
         <td style="padding: 0.6rem 0.8rem;">
           <div style="font-weight: 600;">${prod.nombre}</div>
           <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">${nombreCat}</span>
@@ -115,16 +174,21 @@ window.ModuloSimulador = {
             ${prod.frecuenciaVenta}
           </span>
         </td>
+        <td style="padding: 0.6rem 0.8rem;">${prod.unidadesPorBulto || 1}</td>
         <td style="padding: 0.6rem 0.8rem;">$ ${prod.precioCostoBulto.toLocaleString('es-AR')}</td>
         <td style="padding: 0.6rem 0.8rem; font-weight: 600; color: var(--color-primario);">$ ${prod.precioVentaBulto.toLocaleString('es-AR')}</td>
         <td style="padding: 0.6rem 0.8rem;"><span style="color: var(--color-semaforo-verde-oscuro); font-weight: 700;">+${prod.porcentajeMarcacion}%</span></td>
+        <td style="padding: 0.6rem 0.8rem; font-weight: 600; color: var(--color-primario);">${porcentajeGanancia}%</td>
         <td style="padding: 0.6rem 0.8rem;">
           <div style="display: flex; align-items: center; gap: 0.25rem;">
             <input type="number" class="input-cant-simulada" data-id="${prod.id}" value="${cantSimuladaBase}" min="0" step="1" style="width: 80px; padding: 0.35rem; font-size: 0.85rem; border: 1px solid var(--color-borde); border-radius: 4px; font-weight: 700; text-align: center;">
-            <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">/ ${prod.frecuenciaVenta === 'Diaria' ? 'día' : prod.frecuenciaVenta === 'Semanal' ? 'sem' : 'mes'}</span>
+            <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">/ ${txtFreq}</span>
           </div>
         </td>
-        <td style="padding: 0.6rem 0.8rem; font-weight: 600;">${volMensual.toLocaleString('es-AR')} bultos/mes</td>
+        <td style="padding: 0.6rem 0.8rem; font-size: 0.85rem;">
+          ${volMensual.toLocaleString('es-AR')} bultos/mes<br>
+          <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">(${(volMensual * (prod.unidadesPorBulto || 1)).toLocaleString('es-AR')} uds)</span>
+        </td>
         <td style="padding: 0.6rem 0.8rem; font-weight: 700; color: var(--color-texto-principal);">$ ${ventaMensual.toLocaleString('es-AR')}</td>
         <td style="padding: 0.6rem 0.8rem; font-weight: 700; color: var(--color-semaforo-verde-oscuro);">$ ${margenMensual.toLocaleString('es-AR')}</td>
       `;
@@ -152,6 +216,25 @@ window.ModuloSimulador = {
       });
     });
 
+    document.querySelectorAll('.chk-habilitar-simulacion').forEach(chk => {
+      chk.addEventListener('change', (e) => {
+        const id = e.target.getAttribute('data-id');
+        const habilitado = e.target.checked;
+        
+        const prod = this.productos.find(p => p.id === id);
+        if (prod) {
+          prod.simulacionHabilitada = habilitado;
+          // Actualizar estilo de fila
+          const tr = e.target.closest('tr');
+          if (tr) {
+            tr.style.opacity = habilitado ? '1' : '0.5';
+          }
+          // Usar la cantidad actual para recalcular
+          this.actualizarFilayResumen(id, prod.cantidadSimulada || 0);
+        }
+      });
+    });
+
     const btnRestablecer = document.getElementById('btn-restablecer-cantidades');
     if (btnRestablecer) {
       btnRestablecer.onclick = () => {
@@ -164,26 +247,31 @@ window.ModuloSimulador = {
   },
 
   actualizarFilayResumen(idProducto, nuevaCant) {
-    this.productos = window.BaseDatos.obtenerProductosProyectoActivo();
+    const prod = this.productos.find(p => p.id === idProducto);
+    if (prod) {
+      prod.cantidadSimulada = nuevaCant;
+    }
     const multEscenario = this.obtenerFactorEscenario();
     
     const input = document.querySelector(`.input-cant-simulada[data-id="${idProducto}"]`);
     if (input) {
       const tr = input.closest('tr');
-      const prod = this.productos.find(p => p.id === idProducto);
       if (tr && prod) {
         const factorMensual = this.obtenerFactorMensual(prod.frecuenciaVenta);
-        const cantEfectiva = nuevaCant * multEscenario;
+        const cantEfectiva = prod.simulacionHabilitada !== false ? (nuevaCant * multEscenario) : 0;
         const volMensual = Math.round(cantEfectiva * factorMensual);
         const ventaMensual = volMensual * prod.precioVentaBulto;
         const costoMensual = volMensual * prod.precioCostoBulto;
         const margenMensual = ventaMensual - costoMensual;
 
         const celdas = tr.querySelectorAll('td');
-        if (celdas.length >= 9) {
-          celdas[6].textContent = `${volMensual.toLocaleString('es-AR')} bultos/mes`;
-          celdas[7].textContent = `$ ${ventaMensual.toLocaleString('es-AR')}`;
-          celdas[8].textContent = `$ ${margenMensual.toLocaleString('es-AR')}`;
+        if (celdas.length >= 12) {
+          celdas[9].innerHTML = `
+            ${volMensual.toLocaleString('es-AR')} bultos/mes<br>
+            <span style="font-size: 0.75rem; color: var(--color-texto-secundario);">(${(volMensual * (prod.unidadesPorBulto || 1)).toLocaleString('es-AR')} uds)</span>
+          `;
+          celdas[10].textContent = `$ ${ventaMensual.toLocaleString('es-AR')}`;
+          celdas[11].textContent = `$ ${margenMensual.toLocaleString('es-AR')}`;
         }
       }
     }
@@ -193,12 +281,30 @@ window.ModuloSimulador = {
   },
 
   calcularTotalesParaMultiplicador(mult) {
-    const gastosFijos = window.BaseDatos.obtenerGastosFijosLocalActivo();
-    const empleados = window.BaseDatos.obtenerEmpleadosLocalActivo();
+    // Priorizar datos cargados por los módulos (desde Supabase) sobre el estado local
+    const gastosFijos = (window.ModuloGastos && window.ModuloGastos.gastos) 
+      ? window.ModuloGastos.gastos 
+      : window.BaseDatos.obtenerGastosFijosLocalActivo();
+    const empleados = (window.ModuloPersonal && window.ModuloPersonal.empleados)
+      ? window.ModuloPersonal.empleados
+      : window.BaseDatos.obtenerEmpleadosLocalActivo();
 
     const totalGastosFijos = gastosFijos
       .filter(g => g.estaActivo)
-      .reduce((sum, g) => sum + g.montoMensualProrrateado, 0);
+      .reduce((sum, g) => {
+        let montoMes = g.monto || 0;
+        if (window.ModuloGastos && typeof window.ModuloGastos.calcularMontoMensual === 'function') {
+          montoMes = window.ModuloGastos.calcularMontoMensual(g.monto, g.frecuencia);
+        } else {
+          // Fallback en caso de que el modulo de gastos no esté cargado
+          const frec = g.frecuencia || 'Mensual';
+          if (frec === 'Diaria') montoMes = g.monto * 26;
+          else if (frec === 'Semanal') montoMes = g.monto * 4;
+          else if (frec === 'Bimestral') montoMes = g.monto / 2;
+          else if (frec === 'Anual') montoMes = g.monto / 12;
+        }
+        return sum + montoMes;
+      }, 0);
 
     let totalSueldos = 0;
     empleados.forEach(emp => {
@@ -210,13 +316,15 @@ window.ModuloSimulador = {
     });
 
     const costosFijosTotales = totalGastosFijos + totalSueldos;
+    console.log(`[Simulador] Gastos Fijos: $${totalGastosFijos} | Sueldos (${empleados.length} empleados): $${totalSueldos} | TOTAL Costos Fijos: $${costosFijosTotales}`);
 
     let facturacionTotal = 0;
     let costoVariableTotal = 0;
 
     this.productos.forEach(prod => {
       const factorMensual = this.obtenerFactorMensual(prod.frecuenciaVenta);
-      const cant = (prod.cantidadSimulada || 0) * mult;
+      const cantSimulada = prod.simulacionHabilitada !== false ? (prod.cantidadSimulada || 0) : 0;
+      const cant = cantSimulada * mult;
       const volMensual = cant * factorMensual;
 
       facturacionTotal += (volMensual * prod.precioVentaBulto);
@@ -231,7 +339,9 @@ window.ModuloSimulador = {
       costoVariableTotal,
       margenBrutoTotal,
       costosFijosTotales,
-      resultadoNeto
+      resultadoNeto,
+      totalGastosFijos,
+      totalSueldos
     };
   },
 
@@ -274,6 +384,15 @@ window.ModuloSimulador = {
     document.getElementById('sim-margen-bruto-porcentaje').textContent = `${porcentajeMargenBruto.toFixed(1)}% margen bruto prom.`;
 
     document.getElementById('sim-costos-fijos-totales').textContent = fMon(costosFijosTotales);
+    const elemDesglose = document.getElementById('sim-costos-fijos-desglose');
+    if (elemDesglose) {
+      elemDesglose.innerHTML = `
+        <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 0.25rem;">
+          <span style="background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 0.75rem; display: flex; align-items: center; gap: 0.25rem;">📝 Gastos: ${fMon(datosActuales.totalGastosFijos)}</span>
+          <span style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 0.75rem; display: flex; align-items: center; gap: 0.25rem;">👥 Sueldos: ${fMon(datosActuales.totalSueldos)}</span>
+        </div>
+      `;
+    }
 
     const elemNeto = document.getElementById('sim-resultado-neto');
     elemNeto.textContent = fMon(resultadoNeto);
@@ -282,9 +401,10 @@ window.ModuloSimulador = {
     document.getElementById('sim-resultado-porcentaje').textContent = `${porcentajeResultadoNeto.toFixed(1)}% margen neto s/ventas`;
 
     // Métricas de Días y Cobertura
-    let factorDiasMes = 26;
+    let diasSemana = 6;
     const local = window.BaseDatos.obtenerLocalActivo();
-    if (local && local.horariosComercio) factorDiasMes = local.horariosComercio.diasPorSemana * 4.33;
+    if (local && local.horariosComercio) diasSemana = local.horariosComercio.diasPorSemana || 6;
+    const factorDiasMes = Math.round(diasSemana * 4.33);
 
     const facturacionDiariaRequerida = (costosFijosTotales / (porcentajeMargenBruto / 100 || 1)) / factorDiasMes;
     document.getElementById('sim-facturacion-diaria-requerida').textContent = `${fMon(facturacionDiariaRequerida)} / día`;
@@ -297,11 +417,41 @@ window.ModuloSimulador = {
 
     const elemDias = document.getElementById('sim-dias-para-equilibrio');
     if (diasParaEquilibrio <= factorDiasMes && diasParaEquilibrio > 0) {
-      elemDias.textContent = `${diasParaEquilibrio} días del mes (de ${Math.round(factorDiasMes)})`;
+      elemDias.textContent = `${diasParaEquilibrio} días del mes (de ${factorDiasMes})`;
       elemDias.style.color = 'var(--color-primario)';
     } else {
       elemDias.textContent = `Insuficiente (${diasParaEquilibrio} días necesarios)`;
       elemDias.style.color = 'var(--color-semaforo-rojo)';
+    }
+
+    const elemAnalisisHorarios = document.getElementById('sim-analisis-horarios');
+    if (elemAnalisisHorarios) {
+      elemAnalisisHorarios.style.display = 'block';
+      let diasRentablesTxt = '';
+      let recomendacionTxt = '';
+
+      if (margenBrutoTotal <= 0) {
+        diasRentablesTxt = `No hay margen bruto suficiente para cubrir los costos fijos.`;
+      } else if (diasParaEquilibrio <= factorDiasMes) {
+        diasRentablesTxt = `El local alcanza su punto de equilibrio en el día <strong>${Math.ceil(diasParaEquilibrio)}</strong> del mes.`;
+        const diasGanancia = factorDiasMes - Math.ceil(diasParaEquilibrio);
+        recomendacionTxt = `Te quedan <strong>${diasGanancia} días</strong> de ganancia neta operando ${diasSemana} días a la semana.`;
+      } else {
+        diasRentablesTxt = `El local necesita <strong>${Math.ceil(diasParaEquilibrio)} días</strong> para alcanzar el punto de equilibrio, pero solo opera <strong>${factorDiasMes} días</strong> al mes.`;
+        recomendacionTxt = `<span style="color: var(--color-semaforo-rojo);"><strong>Sugerencia:</strong> Deberías evaluar abrir más días, aumentar margen/volumen, o reducir costos fijos.</span>`;
+      }
+
+      elemAnalisisHorarios.innerHTML = `
+        <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--color-texto);">
+          ⏱ Horarios y Apertura (${local?.nombre || 'Local Activo'})
+        </div>
+        <div style="font-size: 0.85rem; color: var(--color-texto-secundario); margin-bottom: 0.5rem;">
+          Atención: <strong>${diasSemana} días por semana</strong> (~${factorDiasMes} días hábiles al mes).
+        </div>
+        <div style="font-size: 0.85rem;">
+          ${diasRentablesTxt} ${recomendacionTxt}
+        </div>
+      `;
     }
 
     const porcentajeEquilibrioVolumen = margenBrutoTotal > 0 ? ((costosFijosTotales / margenBrutoTotal) * 100).toFixed(1) : 0;

@@ -51,8 +51,25 @@
     </div>
     <form id="form-proyecto">
       <input type="hidden" id="proyecto-modal-id">
+      
+      <!-- Campo Logo con Previsualización -->
       <div style="margin-bottom: 1rem;">
-        <label for="proyecto-modal-nombre" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del Proyecto</label>
+        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Logo de la Empresa / Proyecto</label>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div id="preview-logo-contenedor" style="width: 60px; height: 60px; border-radius: 12px; border: 2px dashed var(--color-borde); display: flex; align-items: center; justify-content: center; background-color: var(--color-fondo-pagina); overflow: hidden; position: relative;">
+            <span id="preview-logo-placeholder" style="font-size: 1.5rem;">🏬</span>
+            <img id="preview-logo-img" src="" alt="Previsualización logo" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <div style="flex: 1;">
+            <input type="file" id="proyecto-modal-logo-file" accept="image/*" style="font-size: 0.85rem; width: 100%;">
+            <input type="hidden" id="proyecto-modal-logo-base64">
+            <p style="font-size: 0.75rem; color: var(--color-texto-secundario); margin: 0.25rem 0 0 0;">Formatos: PNG, JPG, WebP, SVG. Previsualización instantánea.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label for="proyecto-modal-nombre" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del Proyecto / Empresa</label>
         <input type="text" id="proyecto-modal-nombre" required placeholder="Ej: Panadería & Confitería, Gastronomía..." style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde);">
       </div>
       <div style="margin-bottom: 1rem;">
@@ -77,6 +94,11 @@
     <form id="form-local">
       <input type="hidden" id="local-modal-id">
       
+      <div style="margin-bottom: 1rem;">
+        <label for="local-modal-proyecto" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Proyecto / Empresa Perteneciente</label>
+        <select id="local-modal-proyecto" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-borde); border-radius: var(--radio-borde); font-weight: 600; background-color: var(--color-tarjeta);"></select>
+      </div>
+
       <div style="margin-bottom: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
         <div>
           <label for="local-modal-nombre" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Nombre del Local</label>

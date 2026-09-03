@@ -323,8 +323,45 @@ window.ModuloCaja = {
     };
   },
 
-  cargarDatos() {
-    const registrosCaja = window.BaseDatos.obtenerCajaDiariaLocalActivo();
+  async cargarDatos() {
+    let registrosCaja = [];
+    if (window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva) {
+      try {
+        const localId = '10000000-0000-4000-8000-000000000001';
+        const inputMesAno = document.getElementById('caja-filtro-mes-ano');
+        const mesAno = inputMesAno ? inputMesAno.value : null;
+        const cajaRel = await window.RepositorioRelacional.obtenerCajaDiaria(localId, mesAno);
+
+        if (cajaRel && cajaRel.length > 0) {
+          registrosCaja = cajaRel.map(c => ({
+            id: c.id,
+            fecha: c.fecha,
+            ingresosCanales: {
+              can_efectivo: parseFloat(c.total_recaudado) || 0,
+              can_transf: 0,
+              can_nx: 0,
+              can_mp: 0,
+              can_peya: 0,
+              can_rappi: 0,
+              can_may: 0
+            },
+            retirosSocios: parseFloat(c.gastos_caja_chica) || 0,
+            pagosMayoristas: [],
+            ingresosCuentas: (c.caja_diaria_desglose_cuentas || []).map(d => ({
+              idCuenta: d.cuenta_bancaria_id,
+              monto: parseFloat(d.monto) || 0
+            }))
+          }));
+        } else {
+          registrosCaja = window.BaseDatos.obtenerCajaDiariaLocalActivo();
+        }
+      } catch (err) {
+        registrosCaja = window.BaseDatos.obtenerCajaDiariaLocalActivo();
+      }
+    } else {
+      registrosCaja = window.BaseDatos.obtenerCajaDiariaLocalActivo();
+    }
+
     const compras = window.BaseDatos.obtenerComprasLocalActivo();
     this.cargarSelectMayoristas();
     this.cargarSelectCuentasCaja();

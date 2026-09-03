@@ -6,12 +6,65 @@ window.ModuloGastos = {
   gastos: [],
 
   inicializar() {
+    this.cargarCategoriasSelect();
     this.cargarGastos();
     this.configurarEventos();
   },
 
-  cargarGastos() {
-    this.gastos = window.BaseDatos.obtenerGastosFijosLocalActivo();
+  async cargarCategoriasSelect() {
+    if (window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva) {
+      try {
+        const categoriasDB = await window.RepositorioRelacional.obtenerCategoriasGastos();
+        const selects = document.querySelectorAll('#gasto-categoria');
+        
+        selects.forEach(select => {
+          if (select) {
+            select.innerHTML = '<option value="" disabled selected>Seleccione una categoría</option>';
+            categoriasDB.forEach(cat => {
+              const option = document.createElement('option');
+              // Guardamos el ID como value para que sea más fácil enviarlo después
+              option.value = cat.id; 
+              option.textContent = cat.nombre;
+              select.appendChild(option);
+            });
+          }
+        });
+      } catch (err) {
+        console.error('[Gastos] Error cargando categorías:', err);
+      }
+    }
+  },
+
+  async cargarGastos() {
+    if (window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva) {
+      try {
+        const empresaId = window.EstadoGlobal.idProyectoActivo || 'e0000000-0000-4000-8000-000000000001';
+        const gastosRel = await window.RepositorioRelacional.obtenerGastosFijos(empresaId);
+        const categoriasDB = await window.RepositorioRelacional.obtenerCategoriasGastos();
+        
+        if (gastosRel) { // Incluso si es vacío, queremos mostrar 0 gastos para este proyecto
+          this.gastos = gastosRel.map(g => {
+            const categoriaObj = categoriasDB.find(c => c.id === g.categoria_id);
+            return {
+              id: g.id,
+              nombre: g.concepto,
+              monto: parseFloat(g.monto_estimado) || 0,
+              frecuencia: g.frecuencia || 'Mensual',
+              categoriaId: g.categoria_id,
+              categoria: categoriaObj ? categoriaObj.nombre : 'Otra',
+              esAjusteContrato: g.es_ajuste_contrato || false,
+              estaActivo: true // Por defecto activo, ya que no se guarda este estado en BD
+            };
+          });
+        }
+      } catch (err) {
+        console.error('[Gastos] Error cargando desde Supabase:', err);
+        this.gastos = window.BaseDatos.obtenerGastosFijosLocalActivo();
+      }
+    } else {
+      this.gastos = window.BaseDatos.obtenerGastosFijosLocalActivo();
+    }
+
     this.renderizarTabla();
     this.actualizarResumen();
   },
@@ -78,31 +131,39 @@ window.ModuloGastos = {
       .filter(g => g.estaActivo)
       .reduce((sum, g) => sum + this.calcularMontoMensual(g.monto, g.frecuencia), 0);
 
-    const subtotalAlquiler = this.gastos
-      .filter(g => g.estaActivo && (g.categoria === 'Alquiler' || g.categoria === 'Gastos Contrato'))
+    const gastosContrato = this.gastos
+      .filter(g => g.estaActivo && g.esAjusteContrato)
       .reduce((sum, g) => sum + this.calcularMontoMensual(g.monto, g.frecuencia), 0);
 
-    document.getElementById('gastos-total-mensual').textContent = `$ ${totalMensual.toLocaleString('es-AR')}`;
-    document.getElementById('gastos-subtotal-alquiler').textContent = `$ ${subtotalAlquiler.toLocaleString('es-AR')}`;
+    const elTotal = document.getElementById('gastos-total-mensual');
+    const elContrato = document.getElementById('gastos-subtotal-alquiler');
+
+    if (elTotal) elTotal.textContent = `$ ${totalMensual.toLocaleString('es-AR')}`;
+    if (elContrato) elContrato.textContent = `$ ${gastosContrato.toLocaleString('es-AR')}`;
   },
 
   configurarEventos() {
     const btnNuevo = document.getElementById('btn-nuevo-gasto');
-    const modal = document.getElementById('modal-gasto');
     const btnCerrar = document.getElementById('btn-cerrar-modal-gasto');
     const btnCancelar = document.getElementById('btn-cancelar-modal-gasto');
     const form = document.getElementById('form-gasto');
+    const modal = document.getElementById('modal-gasto');
+
+    const cerrarModal = () => {
+      if (modal) modal.classList.remove('activo');
+      if (form) form.reset();
+      document.getElementById('gasto-id').value = '';
+    };
 
     if (btnNuevo) {
       btnNuevo.addEventListener('click', () => {
         document.getElementById('modal-gasto-titulo').textContent = 'Nuevo Gasto Fijo';
-        form.reset();
+        if (form) form.reset();
         document.getElementById('gasto-id').value = '';
-        modal.classList.add('activo');
+        if (modal) modal.classList.add('activo');
       });
     }
 
-    const cerrarModal = () => modal.classList.remove('activo');
     if (btnCerrar) btnCerrar.addEventListener('click', cerrarModal);
     if (btnCancelar) btnCancelar.addEventListener('click', cerrarModal);
 
@@ -136,13 +197,32 @@ window.ModuloGastos = {
         const id = e.target.getAttribute('data-id');
         const gasto = this.gastos.find(g => g.id === id);
         if (gasto) {
-          document.getElementById('modal-gasto-titulo').textContent = 'Editar Gasto Fijo';
-          document.getElementById('gasto-id').value = gasto.id;
-          document.getElementById('gasto-nombre').value = gasto.nombre;
-          document.getElementById('gasto-categoria').value = gasto.categoria;
-          document.getElementById('gasto-frecuencia').value = gasto.frecuencia;
-          document.getElementById('gasto-monto').value = gasto.monto;
-          document.getElementById('gasto-es-contrato').checked = gasto.esAjusteContrato;
+          // Actualizamos todos los elementos por si hay modales duplicados en index.html y gastos.html
+          document.querySelectorAll('#modal-gasto-titulo').forEach(el => el.textContent = 'Editar Gasto Fijo');
+          document.querySelectorAll('#gasto-id').forEach(el => el.value = gasto.id);
+          document.querySelectorAll('#gasto-nombre').forEach(el => el.value = gasto.nombre);
+          
+          document.querySelectorAll('#gasto-categoria').forEach(select => {
+            let encontrado = false;
+            if(gasto.categoriaId) {
+              select.value = gasto.categoriaId;
+              encontrado = (select.value === gasto.categoriaId);
+            } 
+            
+            // Fallback si no tiene categoriaId o no se seteó correctamente
+            if (!encontrado) {
+              for(let i = 0; i < select.options.length; i++) {
+                if(select.options[i].text === gasto.categoria || select.options[i].text.includes(gasto.categoria)) {
+                  select.value = select.options[i].value;
+                  break;
+                }
+              }
+            }
+          });
+          
+          document.querySelectorAll('#gasto-frecuencia').forEach(el => el.value = gasto.frecuencia);
+          document.querySelectorAll('#gasto-monto').forEach(el => el.value = gasto.monto);
+          document.querySelectorAll('#gasto-es-contrato').forEach(el => el.checked = gasto.esAjusteContrato || false);
           document.getElementById('modal-gasto').classList.add('activo');
         }
       });
@@ -164,34 +244,72 @@ window.ModuloGastos = {
     });
   },
 
-  guardarGasto() {
+  async guardarGasto() {
     const estado = window.BaseDatos.obtenerEstado();
-    const id = document.getElementById('gasto-id').value;
-    const nombre = document.getElementById('gasto-nombre').value;
-    const categoria = document.getElementById('gasto-categoria').value;
-    const frecuencia = document.getElementById('gasto-frecuencia').value;
-    const monto = parseFloat(document.getElementById('gasto-monto').value) || 0;
-    const esAjusteContrato = document.getElementById('gasto-es-contrato').checked;
+    if (!estado.gastosFijos) estado.gastosFijos = [];
+    
+    // Buscar el modal activo para leer los valores correctos
+    const modalActivo = document.querySelector('#modal-gasto.activo') || document.querySelector('#modal-gasto');
+    
+    const id = modalActivo.querySelector('#gasto-id').value;
+    const nombre = modalActivo.querySelector('#gasto-nombre').value;
+    const categoria = modalActivo.querySelector('#gasto-categoria').value;
+    const frecuencia = modalActivo.querySelector('#gasto-frecuencia').value;
+    const monto = parseFloat(modalActivo.querySelector('#gasto-monto').value) || 0;
+    const esAjusteContrato = modalActivo.querySelector('#gasto-es-contrato').checked;
+    
     const montoMensualProrrateado = this.calcularMontoMensual(monto, frecuencia);
 
+    // Guardar en Supabase
+    let categoriaNombreParaLocal = 'Fijo';
+
+    if (window.ClienteSupabase && window.ClienteSupabase.sincronizacionActiva) {
+      try {
+        const empresaId = window.EstadoGlobal.idProyectoActivo;
+        
+        // El 'value' del select ahora es directamente el ID de la categoría
+        const categoriaId = categoria; 
+
+        // Buscar el nombre para mostrarlo luego en la tabla
+        const categoriasDB = await window.RepositorioRelacional.obtenerCategoriasGastos();
+        const categoriaObj = categoriasDB.find(c => c.id === categoriaId);
+        if (categoriaObj) categoriaNombreParaLocal = categoriaObj.nombre;
+
+        const payload = {
+          empresa_id: empresaId,
+          concepto: nombre,
+          categoria_id: categoriaId,
+          frecuencia,
+          monto_estimado: monto,
+          monto_mensual: montoMensualProrrateado,
+          es_ajuste_contrato: esAjusteContrato
+        };
+        if (id && !id.startsWith('gas_')) payload.id = id;
+
+        await window.RepositorioRelacional.guardarGastoFijo(payload);
+        console.log('[Gastos] Gasto guardado en Supabase:', nombre);
+      } catch (err) {
+        console.error('[Gastos] Error al guardar en Supabase:', err);
+      }
+    }
+
+    // Guardar también en estado local (fallback)
     if (id) {
-      // Editar
       const gasto = estado.gastosFijos.find(g => g.id === id);
       if (gasto) {
         gasto.nombre = nombre;
-        gasto.categoria = categoria;
+        gasto.categoria = categoriaNombreParaLocal;
         gasto.frecuencia = frecuencia;
         gasto.monto = monto;
         gasto.montoMensualProrrateado = montoMensualProrrateado;
         gasto.esAjusteContrato = esAjusteContrato;
       }
     } else {
-      // Crear
       const nuevoGasto = {
         id: `gas_${Date.now()}`,
         idLocal: estado.idLocalActivo,
         nombre,
-        categoria,
+        categoria: categoriaNombreParaLocal,
         monto,
         frecuencia,
         montoMensualProrrateado,
@@ -202,7 +320,7 @@ window.ModuloGastos = {
     }
 
     window.BaseDatos.guardar();
-    this.cargarGastos();
+    await this.cargarGastos();
     window.renderizarResumenKPIs();
   }
 };
